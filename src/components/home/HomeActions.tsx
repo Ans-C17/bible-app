@@ -1,11 +1,13 @@
 import {
   BookOpen,
+  Brain,
   Compass,
   Languages,
   Search,
-  TestTube2,
   User,
 } from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
 
 import { HomeAction } from "./HomeAction";
 
@@ -13,36 +15,43 @@ const actions = [
   {
     label: "Search",
     icon: Search,
-    glow: "#7dd3fc",
+    color: "#f5df9b",
+    path: "/search",
   },
   {
     label: "Test",
-    icon: TestTube2,
-    glow: "#e6bd55",
+    icon: Brain,
+    color: "#f5df9b",
+    path: "/test",
   },
   {
     label: "My Decks",
     icon: BookOpen,
-    glow: "#93c5fd",
+    color: "#f5df9b",
+    path: "/decks",
   },
   {
     label: "Explore",
     icon: Compass,
-    glow: "#60a5fa",
-  },
-  {
-    label: "Language",
-    icon: Languages,
-    glow: "#bfdbfe",
+    color: "#f5df9b",
+    path: "/explore",
   },
   {
     label: "Profile",
     icon: User,
-    glow: "#f5df9b",
+    color: "#f5df9b",
+    path: "/profile",
   },
 ];
 
-export function HomeActions() {
+type HomeActionsProps = {
+  language: "english" | "malayalam";
+  onLanguageChange: (language: "english" | "malayalam") => void;
+};
+
+export function HomeActions({ language, onLanguageChange }: HomeActionsProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
       {actions.map((action) => (
@@ -50,9 +59,19 @@ export function HomeActions() {
           key={action.label}
           label={action.label}
           icon={action.icon}
-          glow={action.glow}
+          color={action.color}
+          onClick={() => navigate(action.path)}
         />
       ))}
+
+      <HomeAction
+        label={language === "english" ? "Malayalam" : "English"}
+        icon={Languages}
+        color="#f5df9b"
+        onClick={() =>
+          onLanguageChange(language === "english" ? "malayalam" : "english")
+        }
+      />
     </div>
   );
 }

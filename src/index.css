@@ -173,9 +173,30 @@ body {
   background: var(--bible-page-bg);
 }
 
+.dark body {
+  background: #101722;
+  position: relative;
+}
+
+.dark body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at top,
+    #49679d 0%,
+    #263650 38%,
+    #1f2836 68%,
+    #101722 100%
+  );
+}
+
 .bible-page {
-  background: var(--bible-page-bg);
   color: var(--bible-page-text);
+  background: transparent;
 }
 
 .bible-header {
@@ -391,4 +412,16 @@ body {
       margin-top: 3.5rem;
     }
   }
+}
+
+mark {
+  background: rgb(230 189 85 / 45%);
+  color: inherit;
+  border-radius: 0.2rem;
+  padding: 0 0.1em;
+}
+
+.heading {
+  font-weight: 600;
+  color: #101722;
 }

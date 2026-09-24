@@ -1,8 +1,10 @@
 import uFuzzy from "@leeoniya/ufuzzy";
+
 import type { BibleVerse } from "./bible";
+
 import { MALAYALAM_BOOK_NAMES } from "./malayalamBookNames";
 
-const englishUFuzzy = new uFuzzy({
+export const englishUFuzzy = new uFuzzy({
   intraMode: 1,
   intraSub: 1,
   intraTrn: 1,
@@ -11,12 +13,21 @@ const englishUFuzzy = new uFuzzy({
 });
 
 export const createEnglishHaystack = (verses: BibleVerse[]) => {
-  return verses.map(
-    (verse) => `${verse.text} | ${verse.book} ${verse.chapter}:${verse.verse}`,
-  );
+  return verses.map((verse) => {
+    const text = verse.text
+      // Hide headings from search while preserving character positions
+      .replace(/\|\|.*?\|\|/g, (match) => " ".repeat(match.length))
+      // Hide footnote markers while preserving character positions
+      .replace(/\[\^\w\]/g, (match) => " ".repeat(match.length))
+      // Hide backslashes while preserving character positions
+      .replace(/\\/g, " ");
+
+    return `${text} | ${verse.book} ${verse.chapter}:${verse.verse}`;
+  });
 };
 
 // TODO: add malayalam range query for highlighting
+
 export const createMalayalamHaystack = (verses: BibleVerse[]) => {
   return verses.map(
     (verse) =>
@@ -33,6 +44,7 @@ export const searchEnglish = (
   if (query.trim().length === 0) return [];
 
   const idxs = englishUFuzzy.filter(haystack, query);
+
   if (!idxs) return [];
 
   const info = englishUFuzzy.info(idxs, haystack, query);
@@ -51,6 +63,7 @@ export const searchMalayalam = (
   maxResults = 100,
 ) => {
   const normalizedQuery = query.trim().toLocaleLowerCase();
+
   if (normalizedQuery.length === 0) return [];
 
   return verses

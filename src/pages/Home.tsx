@@ -1,11 +1,17 @@
+import { useState } from "react";
+
 import { Bell, BookOpen, CircleHelp, Moon, Sun } from "lucide-react";
 
 import { DailyVerseCard } from "@/components/home/DailyVerseCard";
 import { HomeActions } from "@/components/home/HomeActions";
+
 import { useTheme } from "@/context/ThemeContext";
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+
+  const [language, setLanguage] = useState<"english" | "malayalam">("english");
+
   const isLight = theme === "light";
 
   return (
@@ -36,6 +42,7 @@ export default function Home() {
                 <Moon className="h-4.5 w-4.5 lg:h-6 lg:w-6" strokeWidth={1.8} />
               )}
             </button>
+
             <button
               type="button"
               aria-label="Open tutorial"
@@ -47,6 +54,7 @@ export default function Home() {
                 strokeWidth={1.8}
               />
             </button>
+
             <button
               type="button"
               aria-label="View notifications"
@@ -58,11 +66,11 @@ export default function Home() {
           </nav>
         </header>
 
-        <div className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col">
-          <DailyVerseCard />
+        <div className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col justify-center">
+          <DailyVerseCard language={language} />
 
-          <section className="mt-6 sm:mt-8 lg:mt-10">
-            <HomeActions />
+          <section className="mt-10 sm:mt-8 lg:mt-10">
+            <HomeActions language={language} onLanguageChange={setLanguage} />
           </section>
         </div>
       </div>

@@ -3,12 +3,19 @@ import type { LucideIcon } from "lucide-react";
 type HomeActionProps = {
   label: string;
   icon: LucideIcon;
-  glow: string;
+  color: string;
+  onClick: () => void;
 };
 
-export function HomeAction({ label, icon: Icon, glow }: HomeActionProps) {
+export function HomeAction({
+  label,
+  icon: Icon,
+  color,
+  onClick,
+}: HomeActionProps) {
   return (
     <button
+      onClick={onClick}
       className={[
         "group relative flex h-16 w-full flex-col items-center justify-center",
         "rounded-xl border sm:h-20 sm:rounded-2xl lg:h-24",
@@ -17,9 +24,8 @@ export function HomeAction({ label, icon: Icon, glow }: HomeActionProps) {
         "hover:-translate-y-0.5",
       ].join(" ")}
       style={{
-        background: `linear-gradient(145deg, ${glow}75, ${glow}38)`,
-        borderColor: `${glow}CC`,
-        boxShadow: `0 0 0 1px ${glow}35, 0 6px 16px -8px ${glow}90`,
+        background: "#ffffff0d",
+        borderColor: `${color}80`,
       }}
     >
       <div
@@ -27,8 +33,8 @@ export function HomeAction({ label, icon: Icon, glow }: HomeActionProps) {
           "relative flex h-7 w-7 items-center justify-center rounded-lg sm:h-8 sm:w-8 lg:h-9 lg:w-9",
         ].join(" ")}
         style={{
-          background: glow,
-          color: "#0a1128", // dark icon on the solid chip, match to your bg
+          background: color,
+          color: "#0a1128",
         }}
       >
         <Icon
@@ -44,14 +50,6 @@ export function HomeAction({ label, icon: Icon, glow }: HomeActionProps) {
       >
         {label}
       </span>
-
-      {/* subtle glow, hover only — a small lift, not a spotlight */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        style={{
-          boxShadow: `0 0 20px -6px ${glow}80`,
-        }}
-      />
     </button>
   );
 }

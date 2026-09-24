@@ -1,0 +1,122 @@
+import { useMemo, useState } from "react";
+
+import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
+import { useBible } from "@/context/BibleContext";
+import { formatBibleText } from "@/data/bibleText";
+
+import {
+  createEnglishHaystack,
+  createMalayalamHaystack,
+  searchEnglish,
+  searchMalayalam,
+} from "@/data/search";
+
+export default function Search() {
+  const { englishVerses, malayalamVerses } = useBible();
+
+  const [query, setQuery] = useState("");
+  const [language, setLanguage] = useState<"english" | "malayalam">("english");
+
+  const englishHaystack = useMemo(
+    () => createEnglishHaystack(englishVerses),
+    [englishVerses],
+  );
+
+  const malayalamHaystack = useMemo(
+    () => createMalayalamHaystack(malayalamVerses),
+    [malayalamVerses],
+  );
+
+  const results =
+    language === "english"
+      ? searchEnglish(englishVerses, englishHaystack, query)
+      : searchMalayalam(malayalamVerses, malayalamHaystack, query);
+
+  return (
+    <main className="bible-page min-h-dvh">
+      <div className="mx-auto w-full max-w-2xl px-4 py-8">
+        <div className="bible-header">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Search Verses
+          </h1>
+
+          <p className="mt-1 text-lg">
+            Search the Bible by verse text or reference.
+          </p>
+        </div>
+
+        <div className="mt-6 flex w-fit rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 p-1 dark:bg-white/5">
+          <button
+            type="button"
+            onClick={() => setLanguage("english")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              language === "english"
+                ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
+                : "bible-header-control hover:bg-(--bible-header-control-hover)"
+            }`}
+          >
+            English
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLanguage("malayalam")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              language === "malayalam"
+                ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
+                : "bible-header-control hover:bg-(--bible-header-control-hover)"
+            }`}
+          >
+            Malayalam
+          </button>
+        </div>
+
+        <div className="mt-5">
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={
+              language === "english"
+                ? "Search English verses..."
+                : "Search Malayalam verses..."
+            }
+            className="w-full rounded-xl border border-[var(--bible-gold)]/40 bg-[var(--bible-card-bg)] px-4 py-3 text-[var(--bible-card-text)] outline-none placeholder:text-[var(--bible-card-text)]/50 focus:border-[var(--bible-gold)] focus:ring-2 focus:ring-[var(--bible-gold)]/20"
+          />
+        </div>
+
+        {results.length > 0 && (
+          <div className="mt-6 space-y-3">
+            {results.map(({ verse, ranges }) => (
+              <div
+                key={verse.code}
+                className="bible-verse-card rounded-xl border p-4 shadow-sm"
+              >
+                <p
+                  className={`bible-verse-text leading-relaxed ${language === "malayalam" ? "font-anek" : "font-medium"}`}
+                  dangerouslySetInnerHTML={{
+                    __html: formatBibleText(verse.text, ranges),
+                  }}
+                />
+
+                <p
+                  className={`bible-verse-meta mt-3 text-sm ${language === "malayalam" ? "font-anek" : "font-medium"}`}
+                >
+                  {language === "english"
+                    ? `${verse.book} ${verse.chapter}:${verse.verse}`
+                    : `${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {query.trim() && results.length === 0 && (
+          <div className="mt-8 rounded-xl border border-[var(--bible-gold)]/30 bg-black/5 px-4 py-8 text-center dark:bg-white/5">
+            <p className="bible-header-control text-sm">No verses found.</p>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
