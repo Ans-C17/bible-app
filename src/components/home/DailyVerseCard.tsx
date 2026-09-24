@@ -5,6 +5,7 @@ import { Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBible } from "@/context/BibleContext";
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
+import { formatBibleText } from "@/data/bibleText";
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -127,13 +128,16 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
             ref={textRef}
             style={{ fontSize }}
             className="bible-verse-text text-center font-anek leading-snug tracking-[-0.01em]"
-          >
-            "{verse}"
-          </p>
+            dangerouslySetInnerHTML={{
+              __html: formatBibleText(verse),
+            }}
+          />
         </div>
 
         <div className="flex justify-end pb-3 sm:pb-4 lg:pb-5">
-          <p className="bible-verse-meta text-xs font-bold tracking-wide underline decoration-[#d4a93a]/60 underline-offset-2 sm:text-sm lg:text-base">
+          <p
+            className={`${language === "english" ? "font-medium" : "font-anek"} bible-verse-meta text-xs font-semibold tracking-wide underline decoration-[#d4a93a]/60 underline-offset-2 sm:text-sm lg:text-base`}
+          >
             {reference}
           </p>
         </div>
