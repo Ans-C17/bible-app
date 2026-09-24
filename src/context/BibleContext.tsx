@@ -5,8 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { BookOpen } from "lucide-react";
-
+import LoadingScreen from "../components/LoadingScreen";
 import { loadBible, type BibleVerse } from "../data/bible";
 
 type BibleData = {
@@ -35,27 +34,7 @@ export function BibleProvider({ children }: BibleProviderProps) {
   }, []);
 
   if (!bible) {
-    return (
-      <main className="loading-screen">
-        <div className="loading-content" role="status" aria-live="polite">
-          <div className="loading-icon">
-            <BookOpen className="h-7 w-7" strokeWidth={1.8} />
-          </div>
-
-          <p className="loading-title">Memory Bible</p>
-          <p className="loading-label">
-            Loading
-            <span className="loading-dots" aria-hidden="true">
-              ...
-            </span>
-          </p>
-
-          <div className="loading-track" aria-hidden="true">
-            <div className="loading-progress" />
-          </div>
-        </div>
-      </main>
-    );
+    return <LoadingScreen />;
   }
 
   return (

@@ -122,7 +122,7 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
 
         <div
           ref={boxRef}
-          className="flex min-h-0 items-center justify-center overflow-y-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex min-h-0 items-center justify-center overflow-y-auto py-2 [scrollbar-none] [&::-webkit-scrollbar]:hidden"
         >
           <p
             ref={textRef}
