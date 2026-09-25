@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { useBible } from "@/context/BibleContext";
 import { formatBibleText } from "@/data/bibleText";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -112,13 +112,25 @@ export default function Search() {
                   }}
                 />
 
-                <p
-                  className={`bible-verse-meta mt-3 text-sm ${language === "malayalam" ? "font-anek" : "font-medium"}`}
-                >
-                  {language === "english"
-                    ? `${verse.book} ${verse.chapter}:${verse.verse}`
-                    : `${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`}
-                </p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <p
+                    className={`bible-verse-meta text-sm ${
+                      language === "malayalam" ? "font-anek" : "font-medium"
+                    }`}
+                  >
+                    {language === "english"
+                      ? `${verse.book} ${verse.chapter}:${verse.verse}`
+                      : `${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--bible-gold)]/70 bg-[var(--bible-gold)]/10 px-3 py-1.5 text-sm font-medium text-[var(--bible-card-meta)] transition hover:bg-[var(--bible-gold)]/20"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Add to Deck
+                  </button>
+                </div>
               </div>
             ))}
           </div>
