@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { useBible } from "@/context/BibleContext";
 import { formatBibleText } from "@/data/bibleText";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import {
   createEnglishHaystack,
@@ -12,6 +13,7 @@ import {
 } from "@/data/search";
 
 export default function Search() {
+  const navigate = useNavigate();
   const { englishVerses, malayalamVerses } = useBible();
 
   const [query, setQuery] = useState("");
@@ -45,29 +47,40 @@ export default function Search() {
           </p>
         </div>
 
-        <div className="mt-6 flex w-fit rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 p-1 dark:bg-white/5">
-          <button
-            type="button"
-            onClick={() => setLanguage("english")}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-              language === "english"
-                ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
-                : "bible-header-control hover:bg-(--bible-header-control-hover)"
-            }`}
-          >
-            English
-          </button>
+        <div className="mt-6 flex items-center justify-between">
+          <div className="flex w-fit rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 p-1 dark:bg-white/5">
+            <button
+              type="button"
+              onClick={() => setLanguage("english")}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                language === "english"
+                  ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
+                  : "bible-header-control hover:bg-(--bible-header-control-hover)"
+              }`}
+            >
+              English
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLanguage("malayalam")}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                language === "malayalam"
+                  ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
+                  : "bible-header-control hover:bg-(--bible-header-control-hover)"
+              }`}
+            >
+              Malayalam
+            </button>
+          </div>
 
           <button
             type="button"
-            onClick={() => setLanguage("malayalam")}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-              language === "malayalam"
-                ? "bg-(--bible-header-text) text-[#19345f] shadow-sm"
-                : "bible-header-control hover:bg-(--bible-header-control-hover)"
-            }`}
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 rounded-lg bg-(--bible-header-text) px-4 py-2 text-sm font-medium text-[#19345f] shadow-sm transition hover:opacity-90"
           >
-            Malayalam
+            <ArrowLeft className="h-4 w-4" />
+            Home
           </button>
         </div>
 

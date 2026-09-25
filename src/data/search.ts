@@ -26,8 +26,6 @@ export const createEnglishHaystack = (verses: BibleVerse[]) => {
   });
 };
 
-// TODO: add malayalam range query for highlighting
-
 export const createMalayalamHaystack = (verses: BibleVerse[]) => {
   return verses.map(
     (verse) =>

@@ -10,7 +10,9 @@ import { useTheme } from "@/context/ThemeContext";
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
 
-  const [language, setLanguage] = useState<"english" | "malayalam">("english");
+  const [language, setLanguage] = useState<"english" | "malayalam">(
+    "malayalam",
+  );
 
   const isLight = theme === "light";
 

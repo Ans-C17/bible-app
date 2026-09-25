@@ -1,10 +1,12 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 
 import { supabase } from "@/services/supabase";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
@@ -31,6 +33,8 @@ export default function Login() {
       setError(result.error.message);
       return;
     }
+
+    navigate("/");
 
     console.log(isSignup ? "Signup successful!" : "Logged in!");
   };
