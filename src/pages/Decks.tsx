@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CreateDeckPopup from "@/components/CreateDeckPopup";
 
 import {
   ArrowLeft,
@@ -22,6 +23,7 @@ type Deck = {
 export default function Decks() {
   const navigate = useNavigate();
 
+  const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [decks, setDecks] = useState<Deck[]>([]);
 
   useEffect(() => {
@@ -31,9 +33,10 @@ export default function Decks() {
   const mainDeck = decks.find((deck) => deck.is_default);
   const otherDecks = decks.filter((deck) => !deck.is_default);
 
-  const handleCreateDeck = async () => {
-    const deck = await createDeck("New Deck");
+  const handleCreateDeck = async (name: string) => {
+    const deck = await createDeck(name);
     setDecks((current) => [...current, deck]);
+    setShowCreateDeck(false);
   };
 
   return (
@@ -63,7 +66,7 @@ export default function Decks() {
 
             <button
               type="button"
-              onClick={handleCreateDeck}
+              onClick={() => setShowCreateDeck(true)}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--bible-gold)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 sm:w-auto"
             >
               <Plus className="h-4 w-4" />
@@ -205,6 +208,13 @@ export default function Decks() {
           Your word is a lamp to my feet and a light to my path.
         </p>
       </div>
+
+      {showCreateDeck && (
+        <CreateDeckPopup
+          onClose={() => setShowCreateDeck(false)}
+          onCreate={handleCreateDeck}
+        />
+      )}
     </main>
   );
 }
