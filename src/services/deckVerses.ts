@@ -19,3 +19,17 @@ export async function addVerseToDeck(
 
   return data;
 }
+
+export async function getDeckVerses(deckId: string) {
+  const { data, error } = await supabase
+    .from("deck_verses")
+    .select("*")
+    .eq("deck_id", deckId)
+    .order("added_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}

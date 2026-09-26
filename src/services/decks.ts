@@ -1,6 +1,7 @@
 // this is where react component talks to decks table
 import { supabase } from "./supabase";
 
+// show all decks of yours
 export async function getMyDecks() {
   const { data, error } = await supabase
     .from("decks")
@@ -14,20 +15,7 @@ export async function getMyDecks() {
   return data;
 }
 
-export async function getMainDeck() {
-  const { data, error } = await supabase
-    .from("decks")
-    .select("*")
-    .eq("is_default", true)
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
+// make a deck
 export async function createDeck(name: string) {
   const {
     data: { user },
@@ -45,6 +33,21 @@ export async function createDeck(name: string) {
       is_default: false,
     })
     .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+// get any decks metadata, i dont think this is needed
+export async function getDeck(deckId: string) {
+  const { data, error } = await supabase
+    .from("decks")
+    .select("*")
+    .eq("id", deckId)
     .single();
 
   if (error) {

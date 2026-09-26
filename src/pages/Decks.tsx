@@ -83,12 +83,12 @@ export default function Decks() {
               role="button"
               tabIndex={0}
               onClick={() => {
-                // navigate to deck page later
+                navigate(`/decks/${mainDeck.id}`);
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  // navigate to deck page later
+                  navigate(`/decks/${mainDeck.id}`);
                 }
               }}
               className="cursor-pointer overflow-hidden rounded-2xl border border-[var(--bible-gold)]/45 bg-[var(--bible-card-bg)] transition hover:border-[var(--bible-gold)]/70 hover:shadow-md"
@@ -112,6 +112,10 @@ export default function Decks() {
 
                 <button
                   type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/decks/${mainDeck.id}`);
+                  }}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--bible-gold)]/60 bg-[var(--bible-gold)]/10 px-4 py-2.5 text-sm font-semibold text-[var(--bible-card-text)] shadow-sm transition hover:bg-[var(--bible-gold)]/20 sm:w-auto"
                 >
                   Open
@@ -146,12 +150,12 @@ export default function Decks() {
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    // navigate to deck page later
+                    navigate(`/decks/${deck.id}`);
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
-                      // navigate to deck page later
+                      navigate(`/decks/${deck.id}`);
                     }
                   }}
                   className={`cursor-pointer flex items-center gap-4 px-4 py-4 transition hover:bg-[var(--bible-gold)]/5 sm:px-5 ${
@@ -187,15 +191,6 @@ export default function Decks() {
               <p className="mt-4 text-sm text-[var(--bible-page-text)]/55">
                 No other decks yet.
               </p>
-
-              <button
-                type="button"
-                onClick={handleCreateDeck}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[var(--bible-gold)]/40 px-4 py-2 text-sm font-medium text-[var(--bible-page-text)] transition hover:bg-[var(--bible-gold)]/10"
-              >
-                <Plus className="h-4 w-4" />
-                Create a deck
-              </button>
             </div>
           )}
         </section>

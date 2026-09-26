@@ -8,11 +8,11 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Login from "./pages/Login";
-
 import Test from "./pages/Test";
 import Decks from "./pages/Decks";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
+import Deck from "./pages/Deck";
 
 function App() {
   return (
@@ -40,6 +40,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Decks />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/decks/:deckId"
+                element={
+                  <ProtectedRoute>
+                    <Deck />
                   </ProtectedRoute>
                 }
               />
