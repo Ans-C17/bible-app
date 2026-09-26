@@ -33,3 +33,14 @@ export async function getDeckVerses(deckId: string) {
 
   return data;
 }
+
+export async function getDeckVersesForManyDecks(deckIds: string[]) {
+  const { data, error } = await supabase
+    .from("deck_verses")
+    .select("*")
+    .in("deck_id", deckIds)
+    .order("added_at", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
