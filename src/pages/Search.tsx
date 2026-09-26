@@ -1,9 +1,20 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
+
 import { useBible } from "@/context/BibleContext";
+
 import { formatBibleText } from "@/data/bibleText";
+
 import { ArrowLeft, Plus } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
+
+import { getMyDecks } from "@/services/decks";
+
+import { addVerseToDeck } from "@/services/deckVerses";
+
+import DeckPickerPopup from "@/components/DeckPickerPopup";
 
 import {
   createEnglishHaystack,
@@ -12,12 +23,32 @@ import {
   searchMalayalam,
 } from "@/data/search";
 
+type Deck = {
+  id: string;
+  name: string;
+  is_default: boolean;
+  created_at: string;
+};
+
 export default function Search() {
   const navigate = useNavigate();
+
   const { englishVerses, malayalamVerses } = useBible();
 
   const [query, setQuery] = useState("");
+
   const [language, setLanguage] = useState<"english" | "malayalam">("english");
+
+  const [selectedVerse, setSelectedVerse] = useState<{
+    verseCode: string;
+    language: "english" | "malayalam";
+  } | null>(null);
+
+  const [decks, setDecks] = useState<Deck[]>([]);
+
+  useEffect(() => {
+    getMyDecks().then(setDecks);
+  }, []);
 
   const englishHaystack = useMemo(
     () => createEnglishHaystack(englishVerses),
@@ -47,7 +78,18 @@ export default function Search() {
           </p>
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between gap-4">
+          {/* Back / Home */}
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 px-3 py-2 text-sm font-medium text-[var(--bible-header-text)] shadow-sm transition hover:bg-[var(--bible-header-control-hover)] dark:bg-white/5"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Home
+          </button>
+
+          {/* Language toggle */}
           <div className="flex w-fit rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 p-1 dark:bg-white/5">
             <button
               type="button"
@@ -73,15 +115,6 @@ export default function Search() {
               Malayalam
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2 rounded-lg bg-(--bible-header-text) px-4 py-2 text-sm font-medium text-[#19345f] shadow-sm transition hover:opacity-90"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Home
-          </button>
         </div>
 
         <div className="mt-5">
@@ -106,7 +139,9 @@ export default function Search() {
                 className="bible-verse-card rounded-xl border p-4 shadow-sm"
               >
                 <p
-                  className={`bible-verse-text leading-relaxed ${language === "malayalam" ? "font-anek" : "font-medium"}`}
+                  className={`bible-verse-text leading-relaxed ${
+                    language === "malayalam" ? "font-anek" : "font-medium"
+                  }`}
                   dangerouslySetInnerHTML={{
                     __html: formatBibleText(verse.text, ranges),
                   }}
@@ -125,6 +160,12 @@ export default function Search() {
 
                   <button
                     type="button"
+                    onClick={() =>
+                      setSelectedVerse({
+                        verseCode: verse.code,
+                        language,
+                      })
+                    }
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--bible-gold)]/70 bg-[var(--bible-gold)]/10 px-3 py-1.5 text-sm font-medium text-[var(--bible-card-meta)] transition hover:bg-[var(--bible-gold)]/20"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -142,6 +183,29 @@ export default function Search() {
           </div>
         )}
       </div>
+
+      {selectedVerse && (
+        <DeckPickerPopup
+          verseCode={selectedVerse.verseCode}
+          language={selectedVerse.language}
+          decks={decks}
+          onClose={() => setSelectedVerse(null)}
+          onAdd={async (deckId) => {
+            try {
+              await addVerseToDeck(
+                deckId,
+                selectedVerse.verseCode,
+                selectedVerse.language,
+              );
+
+              setSelectedVerse(null);
+            } catch (error) {
+              console.error("Failed to add verse to deck:", error);
+              setSelectedVerse(null);
+            }
+          }}
+        />
+      )}
     </main>
   );
 }

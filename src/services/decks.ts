@@ -14,6 +14,20 @@ export async function getMyDecks() {
   return data;
 }
 
+export async function getMainDeck() {
+  const { data, error } = await supabase
+    .from("decks")
+    .select("*")
+    .eq("is_default", true)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export async function createDeck(name: string) {
   const {
     data: { user },

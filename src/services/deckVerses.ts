@@ -7,15 +7,11 @@ export async function addVerseToDeck(
   verseCode: string,
   language: string,
 ) {
-  const { data, error } = await supabase
-    .from("deck_verses")
-    .insert({
-      deck_id: deckId,
-      verse_code: verseCode,
-      language,
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.from("deck_verses").insert({
+    deck_id: deckId,
+    verse_code: verseCode,
+    language,
+  });
 
   if (error) {
     throw error;
