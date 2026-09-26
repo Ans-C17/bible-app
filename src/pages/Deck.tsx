@@ -47,7 +47,7 @@ export default function Deck() {
           <button
             type="button"
             onClick={() => navigate("/decks")}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 px-3 py-2 text-sm font-medium text-[var(--bible-header-text)] shadow-sm transition hover:bg-[var(--bible-header-control-hover)] dark:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
           >
             <ArrowLeft className="h-4 w-4" />
             My Decks
@@ -110,7 +110,7 @@ export default function Deck() {
         )}
 
         {verses.length === 0 && (
-          <div className="mt-8 rounded-xl border border-[var(--bible-gold)]/30 bg-black/5 px-4 py-10 text-center dark:bg-white/5">
+          <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-black/5 px-4 py-10 text-center dark:bg-white/5">
             <p className="bible-header-control text-sm">
               This deck has no verses yet
             </p>
@@ -118,7 +118,7 @@ export default function Deck() {
             <button
               type="button"
               onClick={() => navigate("/search")}
-              className="mt-4 rounded-xl bg-[var(--bible-gold)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+              className="mt-4 rounded-xl bg-(--bible-gold) px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
             >
               Add Verses
             </button>

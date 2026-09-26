@@ -33,16 +33,16 @@ export default function DeckPickerPopup({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-[var(--bible-gold)] bg-[var(--bible-card-bg)] p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl border border-(--bible-gold) bg-(--bible-card-bg) p-6 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-[var(--bible-card-text)]">
+            <h2 className="text-xl font-semibold text-(--bible-card-text)">
               Add to Deck
             </h2>
 
-            <p className="mt-1 text-sm text-[var(--bible-card-text)]/70">
+            <p className="mt-1 text-sm text-(--bible-card-text)/70">
               Add verses here for spaced repetition
             </p>
           </div>
@@ -50,7 +50,7 @@ export default function DeckPickerPopup({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[var(--bible-card-text)]/60 transition hover:bg-[var(--bible-gold)]/10 hover:text-[var(--bible-card-text)]"
+            className="rounded-lg p-1.5 text-(--bible-card-text)/60 transition hover:bg-(--bible-gold)/10 hover:text-(--bible-card-text)"
             aria-label="Close"
           >
             ×
@@ -58,7 +58,7 @@ export default function DeckPickerPopup({
         </div>
 
         <div className="mt-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--bible-card-text)]/45">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--bible-card-text)/45">
             Main Deck
           </p>
 
@@ -68,15 +68,15 @@ export default function DeckPickerPopup({
               onClick={() => setSelectedDeckId(mainDeck.id)}
               className={`w-full rounded-xl border p-4 text-left transition ${
                 selectedDeckId === mainDeck.id
-                  ? "border-[var(--bible-gold)] bg-[var(--bible-gold)]/10"
-                  : "border-[var(--bible-gold)]/30 hover:bg-[var(--bible-gold)]/5"
+                  ? "border-(--bible-gold) bg-(--bible-gold)/10"
+                  : "border-(--bible-gold)/30 hover:bg-(--bible-gold)/5"
               }`}
             >
-              <p className="font-medium text-[var(--bible-card-text)]">
+              <p className="font-medium text-(--bible-card-text)">
                 {mainDeck.name}
               </p>
 
-              <p className="mt-1 text-sm text-[var(--bible-card-text)]/65">
+              <p className="mt-1 text-sm text-(--bible-card-text)/65">
                 Your memorization deck
               </p>
             </button>
@@ -85,7 +85,7 @@ export default function DeckPickerPopup({
 
         {otherDecks.length > 0 && (
           <div className="mt-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--bible-card-text)]/45">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--bible-card-text)/45">
               Other Decks
             </p>
 
@@ -97,15 +97,15 @@ export default function DeckPickerPopup({
                   onClick={() => setSelectedDeckId(deck.id)}
                   className={`w-full rounded-xl border p-3 text-left transition ${
                     selectedDeckId === deck.id
-                      ? "border-[var(--bible-gold)] bg-[var(--bible-gold)]/10"
-                      : "border-[var(--bible-gold)]/25 hover:bg-[var(--bible-gold)]/5"
+                      ? "border-(--bible-gold) bg-(--bible-gold)/10"
+                      : "border-(--bible-gold)/25 hover:bg-(--bible-gold)/5"
                   }`}
                 >
-                  <p className="font-medium text-[var(--bible-card-text)]">
+                  <p className="font-medium text-(--bible-card-text)">
                     {deck.name}
                   </p>
 
-                  <p className="mt-0.5 text-sm text-[var(--bible-card-text)]/60">
+                  <p className="mt-0.5 text-sm text-(--bible-card-text)/60">
                     Study collection
                   </p>
                 </button>
@@ -118,7 +118,7 @@ export default function DeckPickerPopup({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-[var(--bible-card-text)]/70 transition hover:bg-[var(--bible-gold)]/10 hover:text-[var(--bible-card-text)]"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-(--bible-card-text)/70 transition hover:bg-(--bible-gold)/10 hover:text-(--bible-card-text)"
           >
             Cancel
           </button>
@@ -127,7 +127,7 @@ export default function DeckPickerPopup({
             type="button"
             onClick={() => onAdd(selectedDeckId)}
             disabled={!selectedDeckId}
-            className="rounded-lg bg-[var(--bible-gold)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-(--bible-gold) px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Add
           </button>

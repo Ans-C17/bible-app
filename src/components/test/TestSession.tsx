@@ -47,12 +47,12 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
       <button
         type="button"
         onClick={handleCardTap}
-        className="group relative flex aspect-square w-full max-w-[560px] items-center justify-center overflow-hidden rounded-[2rem] border border-[var(--bible-gold)]/25 bg-[var(--bible-card-bg)] p-7 text-left shadow-2xl transition-transform duration-300 active:scale-[0.985] sm:rounded-[2.5rem] sm:p-10"
+        className="group relative flex aspect-square w-full max-w-[560px] items-center justify-center overflow-hidden rounded-[2rem] border border-(--bible-gold)/25 bg-(--bible-card-bg) p-7 text-left shadow-2xl transition-transform duration-300 active:scale-[0.985] sm:rounded-[2.5rem] sm:p-10"
       >
         {/* Reference */}
         <div className="absolute inset-x-0 top-0 flex justify-center pt-7 sm:pt-9">
           <span
-            className={`text-sm font-semibold tracking-wide text-[var(--bible-card-meta)] sm:text-base ${
+            className={`text-sm font-semibold tracking-wide text-(--bible-card-meta) sm:text-base ${
               currentVerse.language === "malayalam" ? "font-anek" : ""
             }`}
           >
@@ -61,7 +61,7 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
         </div>
 
         {!revealed ? (
-          <span className="text-sm font-medium tracking-wide text-[var(--bible-card-text)]/50 transition-opacity group-hover:text-[var(--bible-card-text)]/70">
+          <span className="text-sm font-medium tracking-wide text-(--bible-card-text)/50 transition-opacity group-hover:text-(--bible-card-text)/70">
             Tap to reveal
           </span>
         ) : (
@@ -85,9 +85,9 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
 
       {/* Progress */}
       <div className="mt-7 w-full max-w-[560px] px-1">
-        <div className="h-1.5 overflow-hidden rounded-full bg-[var(--bible-header-text)]/10">
+        <div className="h-1.5 overflow-hidden rounded-full bg-(--bible-header-text)/10">
           <div
-            className="h-full rounded-full bg-[var(--bible-gold)] transition-all duration-500"
+            className="h-full rounded-full bg-(--bible-gold) transition-all duration-500"
             style={{
               width: `${Math.max(progress, 3)}%`,
             }}

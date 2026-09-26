@@ -47,7 +47,7 @@ export default function Decks() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 px-3 py-2 text-sm font-medium text-[var(--bible-header-text)] shadow-sm transition hover:bg-[var(--bible-header-control-hover)] dark:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
           >
             <ArrowLeft className="h-4 w-4" />
             Home
@@ -59,7 +59,7 @@ export default function Decks() {
                 My Decks
               </h1>
 
-              <p className="mt-2 text-base text-[var(--bible-page-text)]">
+              <p className="mt-2 text-base text-(--bible-page-text)">
                 Organize your verses
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function Decks() {
             <button
               type="button"
               onClick={() => setShowCreateDeck(true)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--bible-gold)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-(--bible-gold) px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Create Deck
@@ -78,7 +78,7 @@ export default function Decks() {
         {/* Main Deck */}
         {mainDeck && (
           <section className="mt-10">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--bible-page-text)]/45">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
               Main Deck
             </h2>
 
@@ -94,20 +94,20 @@ export default function Decks() {
                   navigate(`/decks/${mainDeck.id}`);
                 }
               }}
-              className="cursor-pointer overflow-hidden rounded-2xl border border-[var(--bible-gold)]/45 bg-[var(--bible-card-bg)] transition hover:border-[var(--bible-gold)]/70 hover:shadow-md"
+              className="cursor-pointer overflow-hidden rounded-2xl border border-(--bible-gold)/45 bg-(--bible-card-bg) transition hover:border-(--bible-gold)/70 hover:shadow-md"
             >
               <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div className="flex min-w-0 items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--bible-gold)]/40 bg-[var(--bible-gold)]/10 text-[var(--bible-card-meta)]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-card-meta)">
                     <PlayingCardsFan className="h-5 w-5" />
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="truncate text-lg font-semibold text-[var(--bible-card-text)]">
+                    <h3 className="truncate text-lg font-semibold text-(--bible-card-text)">
                       {mainDeck.name}
                     </h3>
 
-                    <p className="mt-0.5 text-sm text-[var(--bible-card-text)]/55">
+                    <p className="mt-0.5 text-sm text-(--bible-card-text)/55">
                       Add verses here for spaced repetition
                     </p>
                   </div>
@@ -119,7 +119,7 @@ export default function Decks() {
                     event.stopPropagation();
                     navigate(`/decks/${mainDeck.id}`);
                   }}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--bible-gold)]/60 bg-[var(--bible-gold)]/10 px-4 py-2.5 text-sm font-semibold text-[var(--bible-card-text)] shadow-sm transition hover:bg-[var(--bible-gold)]/20 sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-(--bible-gold)/60 bg-(--bible-gold)/10 px-4 py-2.5 text-sm font-semibold text-(--bible-card-text) shadow-sm transition hover:bg-(--bible-gold)/20 sm:w-auto"
                 >
                   Open
                   <ArrowRight className="h-4 w-4" />
@@ -133,20 +133,20 @@ export default function Decks() {
         <section className="mt-10">
           <div className="mb-3 flex items-end justify-between">
             <div>
-              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--bible-page-text)]/45">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
                 Other Decks
               </h2>
             </div>
 
             {otherDecks.length > 0 && (
-              <span className="text-sm text-[var(--bible-page-text)]/40">
+              <span className="text-sm text-(--bible-page-text)/40">
                 {otherDecks.length}
               </span>
             )}
           </div>
 
           {otherDecks.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-[var(--bible-gold)]/25 bg-black/5 dark:bg-white/5">
+            <div className="overflow-hidden rounded-2xl border border-(--bible-gold)/25 bg-black/5 dark:bg-white/5">
               {otherDecks.map((deck, index) => (
                 <div
                   key={deck.id}
@@ -161,25 +161,25 @@ export default function Decks() {
                       navigate(`/decks/${deck.id}`);
                     }
                   }}
-                  className={`cursor-pointer flex items-center gap-4 px-4 py-4 transition hover:bg-[var(--bible-gold)]/5 sm:px-5 ${
+                  className={`cursor-pointer flex items-center gap-4 px-4 py-4 transition hover:bg-(--bible-gold)/5 sm:px-5 ${
                     index !== otherDecks.length - 1
-                      ? "border-b border-[var(--bible-gold)]/15"
+                      ? "border-b border-(--bible-gold)/15"
                       : ""
                   }`}
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--bible-gold)]/25 text-[var(--bible-gold)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-(--bible-gold)/25 text-(--bible-gold)">
                     <Layers className="h-4 w-4" />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-medium text-[var(--bible-page-text)]">
+                    <h3 className="truncate font-medium text-(--bible-page-text)">
                       {deck.name}
                     </h3>
                   </div>
 
                   <button
                     type="button"
-                    className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-[var(--bible-gold)]/50 bg-[var(--bible-gold)]/10 px-3.5 py-2 text-sm font-semibold text-[var(--bible-page-text)] shadow-sm transition hover:bg-[var(--bible-gold)]/20"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-(--bible-gold)/50 bg-(--bible-gold)/10 px-3.5 py-2 text-sm font-semibold text-(--bible-page-text) shadow-sm transition hover:bg-(--bible-gold)/20"
                   >
                     Open
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -188,10 +188,10 @@ export default function Decks() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-[var(--bible-gold)]/25 bg-black/5 px-6 py-10 text-center dark:bg-white/5">
-              <Layers className="mx-auto h-6 w-6 text-[var(--bible-gold)]/60" />
+            <div className="rounded-2xl border border-(--bible-gold)/25 bg-black/5 px-6 py-10 text-center dark:bg-white/5">
+              <Layers className="mx-auto h-6 w-6 text-(--bible-gold)/60" />
 
-              <p className="mt-4 text-sm text-[var(--bible-page-text)]/55">
+              <p className="mt-4 text-sm text-(--bible-page-text)/55">
                 No other decks yet.
               </p>
             </div>

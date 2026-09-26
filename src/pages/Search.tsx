@@ -83,14 +83,14 @@ export default function Search() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 px-3 py-2 text-sm font-medium text-[var(--bible-header-text)] shadow-sm transition hover:bg-[var(--bible-header-control-hover)] dark:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
           >
             <ArrowLeft className="h-4 w-4" />
             Home
           </button>
 
           {/* Language toggle */}
-          <div className="flex w-fit rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 p-1 dark:bg-white/5">
+          <div className="flex w-fit rounded-xl border border-(--bible-gold)/40 bg-black/5 p-1 dark:bg-white/5">
             <button
               type="button"
               onClick={() => setLanguage("english")}
@@ -127,7 +127,7 @@ export default function Search() {
                 ? "Search English verses..."
                 : "Search Malayalam verses..."
             }
-            className="w-full rounded-xl border border-[var(--bible-gold)]/40 bg-[var(--bible-card-bg)] px-4 py-3 text-[var(--bible-card-text)] outline-none placeholder:text-[var(--bible-card-text)]/50 focus:border-[var(--bible-gold)] focus:ring-2 focus:ring-[var(--bible-gold)]/20"
+            className="w-full rounded-xl border border-(--bible-gold)/40 bg-(--bible-card-bg) px-4 py-3 text-(--bible-card-text) outline-none placeholder:text-(--bible-card-text)/50 focus:border-(--bible-gold) focus:ring-2 focus:ring-(--bible-gold)/20"
           />
         </div>
 
@@ -166,7 +166,7 @@ export default function Search() {
                         language,
                       })
                     }
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--bible-gold)]/70 bg-[var(--bible-gold)]/10 px-3 py-1.5 text-sm font-medium text-[var(--bible-card-meta)] transition hover:bg-[var(--bible-gold)]/20"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-(--bible-gold)/70 bg-(--bible-gold)/10 px-3 py-1.5 text-sm font-medium text-(--bible-card-meta) transition hover:bg-(--bible-gold)/20"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Add to Deck
@@ -178,7 +178,7 @@ export default function Search() {
         )}
 
         {query.trim() && results.length === 0 && (
-          <div className="mt-8 rounded-xl border border-[var(--bible-gold)]/30 bg-black/5 px-4 py-8 text-center dark:bg-white/5">
+          <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-black/5 px-4 py-8 text-center dark:bg-white/5">
             <p className="bible-header-control text-sm">No verses found.</p>
           </div>
         )}

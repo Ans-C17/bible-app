@@ -135,12 +135,12 @@ export default function Test() {
   };
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden bg-[var(--bible-page-bg)] px-4 py-6 text-[var(--bible-page-text)] sm:py-8">
+    <main className="flex h-dvh flex-col overflow-hidden bg-(--bible-page-bg) px-4 py-6 text-(--bible-page-text) sm:py-8">
       <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
         <button
           type="button"
           onClick={handleBack}
-          className="mb-8 inline-flex items-center self-start shrink-0 gap-2 rounded-xl border border-[var(--bible-gold)]/40 bg-black/5 px-3 py-2 text-sm font-medium text-[var(--bible-header-text)] shadow-sm transition hover:bg-[var(--bible-header-control-hover)] dark:bg-white/5"
+          className="mb-8 inline-flex items-center self-start shrink-0 gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
         >
           <ArrowLeft size={18} />
           Back
