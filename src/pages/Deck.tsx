@@ -112,7 +112,7 @@ export default function Deck() {
         {verses.length === 0 && (
           <div className="mt-8 rounded-xl border border-[var(--bible-gold)]/30 bg-black/5 px-4 py-10 text-center dark:bg-white/5">
             <p className="bible-header-control text-sm">
-              This deck has no verses yet.
+              This deck has no verses yet
             </p>
 
             <button
@@ -120,7 +120,7 @@ export default function Deck() {
               onClick={() => navigate("/search")}
               className="mt-4 rounded-xl bg-[var(--bible-gold)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
             >
-              Find Verses
+              Add Verses
             </button>
           </div>
         )}
