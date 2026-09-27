@@ -114,6 +114,14 @@ export default function Test() {
     );
   };
 
+  const toggleAllDecks = () => {
+    setSelectedDeckIds((current) =>
+      current.length === studyDecks.length
+        ? []
+        : studyDecks.map((deck) => deck.id),
+    );
+  };
+
   const handleBack = () => {
     if (testStarted) {
       setTestStarted(false);
@@ -157,6 +165,7 @@ export default function Test() {
             studyDecks={studyDecks}
             selectedDeckIds={selectedDeckIds}
             onToggleDeck={toggleDeck}
+            onToggleAll={toggleAllDecks}
             onStartTest={handleStartTest}
           />
         )}
@@ -169,7 +178,7 @@ export default function Test() {
         )}
       </div>
 
-      <p
+      {/* <p
         className="mt-6 text-center text-xs"
         style={{
           color: "var(--bible-page-text)",
@@ -177,7 +186,7 @@ export default function Test() {
         }}
       >
         When they call to me, I will answer them;
-      </p>
+      </p> */}
     </main>
   );
 }

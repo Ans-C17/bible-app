@@ -11,6 +11,7 @@ type StudyDeckSelectionProps = {
   studyDecks: Deck[];
   selectedDeckIds: string[];
   onToggleDeck: (deckId: string) => void;
+  onToggleAll: () => void;
   onStartTest: () => void;
 };
 
@@ -18,8 +19,12 @@ export default function StudyDeckSelection({
   studyDecks,
   selectedDeckIds,
   onToggleDeck,
+  onToggleAll,
   onStartTest,
 }: StudyDeckSelectionProps) {
+  const allSelected =
+    studyDecks.length > 0 && selectedDeckIds.length === studyDecks.length;
+
   return (
     <section className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 text-center">
@@ -60,19 +65,27 @@ export default function StudyDeckSelection({
                 <p className="text-sm font-semibold text-(--bible-card-text)">
                   Your Study Decks
                 </p>
-
                 <p className="mt-0.5 text-xs text-(--bible-card-text)/45">
                   Select one or more
                 </p>
               </div>
 
-              {selectedDeckIds.length > 0 && (
-                <span className="rounded-full bg-(--bible-gold)/10 px-3 py-1 text-xs font-medium text-(--bible-gold)">
-                  {selectedDeckIds.length} selected
-                </span>
-              )}
-            </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onToggleAll}
+                  className="text-xs font-medium text-(--bible-gold) transition hover:opacity-75"
+                >
+                  {allSelected ? "Deselect all" : "Select all"}
+                </button>
 
+                {selectedDeckIds.length > 0 && (
+                  <span className="rounded-full bg-(--bible-gold)/10 px-3 py-1 text-xs font-medium text-(--bible-gold)">
+                    {selectedDeckIds.length} selected
+                  </span>
+                )}
+              </div>
+            </div>
             <div className="overflow-y-auto">
               {studyDecks.map((deck, index) => {
                 const selected = selectedDeckIds.includes(deck.id);
