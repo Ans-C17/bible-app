@@ -19,7 +19,14 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
   const [canContinue, setCanContinue] = useState(false);
 
   const currentVerse = verses[currentVerseIndex];
-  const isLastVerse = currentVerseIndex === verses.length - 1;
+  const isLastVerse =
+    verses.length > 0 && currentVerseIndex === verses.length - 1;
+
+  useEffect(() => {
+    if (verses.length === 0) {
+      onFinish();
+    }
+  }, [verses.length, onFinish]);
 
   useEffect(() => {
     if (!revealed) {
@@ -36,8 +43,7 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
     };
   }, [revealed, currentVerseIndex]);
 
-  if (verses.length === 0) {
-    onFinish();
+  if (verses.length === 0 || !currentVerse) {
     return null;
   }
 
@@ -90,9 +96,7 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
               </span>
             </div>
           ) : (
-            <span className="text-xs text-(--bible-page-text)/25 sm:text-sm">
-              {/* Intentionally empty while the user reads */}
-            </span>
+            <span className="text-xs text-(--bible-page-text)/25 sm:text-sm" />
           )}
         </div>
 
@@ -107,11 +111,9 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
 
           {/* Ambient light */}
           <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-(--bible-gold)/8 blur-3xl sm:h-56 sm:w-56" />
-
           <div className="pointer-events-none absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-(--bible-gold)/6 blur-3xl sm:h-56 sm:w-56" />
 
           {!revealed ? (
-            /* Question */
             <div className="relative flex flex-col items-center justify-center gap-4 text-center">
               <span
                 className={`text-[clamp(1.3rem,4vw,1.8rem)] font-semibold leading-tight tracking-wide text-(--bible-card-meta) ${
@@ -126,14 +128,11 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
               </span>
             </div>
           ) : (
-            /* Answer */
             <div className="relative flex h-full w-full flex-col items-center justify-center">
               {/* Verse */}
               <div
                 className="flex max-h-[235px] w-full items-center justify-center overflow-y-auto px-3 sm:max-h-[270px] sm:px-5"
-                style={{
-                  scrollbarWidth: "none",
-                }}
+                style={{ scrollbarWidth: "none" }}
               >
                 <p
                   className={`bible-verse-text w-full text-center leading-snug tracking-[-0.01em] ${

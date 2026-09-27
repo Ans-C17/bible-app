@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBible } from "@/context/BibleContext";
 import { ArrowLeft } from "lucide-react";
-
 import { getMyDecks } from "@/services/decks";
 import { getDeckVersesForManyDecks } from "@/services/deckVerses";
-
 import TestSession from "@/components/test/TestSession";
+import TestComplete from "@/components/test/TestComplete";
 import TestModeSelection from "@/components/test/TestModeSelection";
 import MainDeckSelection from "@/components/test/MainDeckSelection";
 import StudyDeckSelection from "@/components/test/StudyDeckSelection";
-
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { formatBibleText } from "@/data/bibleText";
 
@@ -40,6 +38,10 @@ export default function Test() {
 
   const [testVerses, setTestVerses] = useState<TestVerse[]>([]);
   const [testStarted, setTestStarted] = useState(false);
+  const [testCompleted, setTestCompleted] = useState(false);
+
+  const [testStartTime, setTestStartTime] = useState<number | null>(null);
+  const [testDuration, setTestDuration] = useState(0);
 
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
@@ -100,10 +102,38 @@ export default function Test() {
         .filter((verse): verse is TestVerse => verse !== null);
 
       setTestVerses(testVerses);
+      setTestCompleted(false);
+      setTestDuration(0);
+      setTestStartTime(Date.now());
       setTestStarted(true);
     } catch (error) {
       console.error("Failed to load test verses:", error);
     }
+  };
+
+  const handleTestFinish = () => {
+    if (testStartTime !== null) {
+      const duration = Math.floor((Date.now() - testStartTime) / 1000);
+
+      setTestDuration(duration);
+    }
+
+    setTestStarted(false);
+    setTestCompleted(true);
+  };
+
+  const handleTestAgain = () => {
+    setTestCompleted(false);
+    setTestDuration(0);
+    setTestStartTime(Date.now());
+    setTestStarted(true);
+  };
+
+  const handleDone = () => {
+    setTestCompleted(false);
+    setTestStarted(false);
+    setTestDuration(0);
+    setTestStartTime(null);
   };
 
   const toggleDeck = (deckId: string) => {
@@ -123,6 +153,11 @@ export default function Test() {
   };
 
   const handleBack = () => {
+    if (testCompleted) {
+      handleDone();
+      return;
+    }
+
     if (testStarted) {
       setTestStarted(false);
       return;
@@ -148,7 +183,7 @@ export default function Test() {
         <button
           type="button"
           onClick={handleBack}
-          className="mb-8 inline-flex items-center self-start shrink-0 gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
+          className="mb-8 inline-flex shrink-0 items-center self-start gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
         >
           <ArrowLeft size={18} />
           Back
@@ -156,11 +191,12 @@ export default function Test() {
 
         {!mode && <TestModeSelection onSelect={setMode} />}
 
-        {mode === "main" && !mainReviewMode && !testStarted && (
-          <MainDeckSelection onSelect={setMainReviewMode} />
-        )}
+        {mode === "main" &&
+          !mainReviewMode &&
+          !testStarted &&
+          !testCompleted && <MainDeckSelection onSelect={setMainReviewMode} />}
 
-        {mode === "study" && !testStarted && (
+        {mode === "study" && !testStarted && !testCompleted && (
           <StudyDeckSelection
             studyDecks={studyDecks}
             selectedDeckIds={selectedDeckIds}
@@ -171,22 +207,19 @@ export default function Test() {
         )}
 
         {testStarted && (
-          <TestSession
-            verses={testVerses}
-            onFinish={() => setTestStarted(false)}
+          <TestSession verses={testVerses} onFinish={handleTestFinish} />
+        )}
+
+        {testCompleted && (
+          <TestComplete
+            verseCount={testVerses.length}
+            deckCount={selectedDeckIds.length}
+            elapsedSeconds={testDuration}
+            onTestAgain={handleTestAgain}
+            onDone={handleDone}
           />
         )}
       </div>
-
-      {/* <p
-        className="mt-6 text-center text-xs"
-        style={{
-          color: "var(--bible-page-text)",
-          opacity: 0.5,
-        }}
-      >
-        When they call to me, I will answer them;
-      </p> */}
     </main>
   );
 }
