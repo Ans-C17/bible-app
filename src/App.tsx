@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { BibleProvider } from "./context/BibleContext";
-import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -17,54 +16,52 @@ import Deck from "./pages/Deck";
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <BibleProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/explore" element={<Explore />} />
+      <BibleProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/explore" element={<Explore />} />
 
-              <Route
-                path="/test"
-                element={
-                  <ProtectedRoute>
-                    <Test />
-                  </ProtectedRoute>
-                }
-              />
+            <Route
+              path="/test"
+              element={
+                <ProtectedRoute>
+                  <Test />
+                </ProtectedRoute>
+              }
+            />
 
-              <Route
-                path="/decks"
-                element={
-                  <ProtectedRoute>
-                    <Decks />
-                  </ProtectedRoute>
-                }
-              />
+            <Route
+              path="/decks"
+              element={
+                <ProtectedRoute>
+                  <Decks />
+                </ProtectedRoute>
+              }
+            />
 
-              <Route
-                path="/decks/:deckId"
-                element={
-                  <ProtectedRoute>
-                    <Deck />
-                  </ProtectedRoute>
-                }
-              />
+            <Route
+              path="/decks/:deckId"
+              element={
+                <ProtectedRoute>
+                  <Deck />
+                </ProtectedRoute>
+              }
+            />
 
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </BrowserRouter>
-        </BibleProvider>
-      </ThemeProvider>
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </BibleProvider>
     </AuthProvider>
   );
 }

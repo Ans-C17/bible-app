@@ -55,7 +55,7 @@ export default function CreateDeckPopup({
             onChange={(event) => setName(event.target.value)}
             placeholder="e.g. Romans"
             autoFocus
-            className="w-full rounded-xl border border-(--bible-gold)/40 bg-black/5 px-4 py-3 text-(--bible-card-text) outline-none placeholder:text-(--bible-card-text)/40 focus:border-(--bible-gold) focus:ring-2 focus:ring-(--bible-gold)/20 dark:bg-white/5"
+            className="w-full rounded-xl border border-(--bible-gold)/40 bg-white/5 px-4 py-3 text-(--bible-card-text) outline-none placeholder:text-(--bible-card-text)/40 focus:border-(--bible-gold) focus:ring-2 focus:ring-(--bible-gold)/20"
           />
         </div>
 

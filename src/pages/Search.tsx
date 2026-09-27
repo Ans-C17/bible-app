@@ -83,14 +83,14 @@ export default function Search() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-white/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover)"
           >
             <ArrowLeft className="h-4 w-4" />
             Home
           </button>
 
           {/* Language toggle */}
-          <div className="flex w-fit rounded-xl border border-(--bible-gold)/40 bg-black/5 p-1 dark:bg-white/5">
+          <div className="flex w-fit rounded-xl border border-(--bible-gold)/40 bg-white/5 p-1">
             <button
               type="button"
               onClick={() => setLanguage("english")}
@@ -178,7 +178,7 @@ export default function Search() {
         )}
 
         {query.trim() && results.length === 0 && (
-          <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-black/5 px-4 py-8 text-center dark:bg-white/5">
+          <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-white/5 px-4 py-8 text-center">
             <p className="bible-header-control text-sm">No verses found.</p>
           </div>
         )}

@@ -331,7 +331,7 @@ export default function Test() {
         <button
           type="button"
           onClick={handleBack}
-          className="mb-8 inline-flex shrink-0 items-center self-start gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
+          className="mb-8 inline-flex shrink-0 items-center self-start gap-2 rounded-xl border border-(--bible-gold)/40 bg-white/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover)"
         >
           <ArrowLeft size={18} />
           Back

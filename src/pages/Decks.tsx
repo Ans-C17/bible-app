@@ -47,7 +47,7 @@ export default function Decks() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-black/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover) dark:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/40 bg-white/5 px-3 py-2 text-sm font-medium text-(--bible-header-text) shadow-sm transition hover:bg-(--bible-header-control-hover)"
           >
             <ArrowLeft className="h-4 w-4" />
             Home
@@ -146,7 +146,7 @@ export default function Decks() {
           </div>
 
           {otherDecks.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-(--bible-gold)/25 bg-black/5 dark:bg-white/5">
+            <div className="overflow-hidden rounded-2xl border border-(--bible-gold)/25 bg-white/5">
               {otherDecks.map((deck, index) => (
                 <div
                   key={deck.id}
@@ -188,7 +188,7 @@ export default function Decks() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-(--bible-gold)/25 bg-black/5 px-6 py-10 text-center dark:bg-white/5">
+            <div className="rounded-2xl border border-(--bible-gold)/25 bg-white/5 px-6 py-10 text-center">
               <Layers className="mx-auto h-6 w-6 text-(--bible-gold)/60" />
 
               <p className="mt-4 text-sm text-(--bible-page-text)/55">

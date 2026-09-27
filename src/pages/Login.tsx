@@ -202,7 +202,7 @@ export default function Login() {
               setIsSignup((current) => !current);
               setError("");
             }}
-            className="w-full cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/5"
+            className="w-full cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition hover:bg-white/5"
             style={{
               borderColor:
                 "color-mix(in srgb, var(--bible-card-text) 20%, transparent)",
