@@ -197,6 +197,48 @@ export default function Test() {
     }
   };
 
+  const handleStartMainReviewAll = async () => {
+    setTestType("main");
+
+    try {
+      const mainDeck = await getMainDeck();
+      const verses = await getDeckVerses(mainDeck.id);
+
+      const testVerses = verses
+        .map((verse) => {
+          const bibleVerse =
+            verse.language === "english"
+              ? englishMap.get(verse.verse_code)
+              : malayalamMap.get(verse.verse_code);
+
+          if (!bibleVerse) {
+            return null;
+          }
+
+          const reference =
+            verse.language === "english"
+              ? `${bibleVerse.book} ${bibleVerse.chapter}:${bibleVerse.verse}`
+              : `${MALAYALAM_BOOK_NAMES[bibleVerse.bookId!]} ${bibleVerse.chapter}:${bibleVerse.verse}`;
+
+          return {
+            verse_code: verse.verse_code,
+            language: verse.language as "english" | "malayalam",
+            reference,
+            text: formatBibleText(bibleVerse.text),
+          };
+        })
+        .filter((verse): verse is TestVerse => verse !== null);
+
+      setTestVerses(testVerses);
+      setTestCompleted(false);
+      setTestDuration(0);
+      setTestStartTime(Date.now());
+      setTestStarted(true);
+    } catch (error) {
+      console.error("Failed to load Main Deck review:", error);
+    }
+  };
+
   const handleTestFinish = () => {
     if (testStartTime !== null) {
       const duration = Math.floor((Date.now() - testStartTime) / 1000);
@@ -220,6 +262,7 @@ export default function Test() {
     setTestStarted(false);
     setTestDuration(0);
     setTestStartTime(null);
+    setMainReviewMode(null);
   };
 
   const toggleDeck = (deckId: string) => {
@@ -288,6 +331,8 @@ export default function Test() {
 
                 if (selectedMode === "active") {
                   handleStartMainTest();
+                } else {
+                  handleStartMainReviewAll();
                 }
               }}
             />
@@ -321,11 +366,15 @@ export default function Test() {
           <TestSession verses={testVerses} onFinish={handleTestFinish} />
         )}
 
-        {testStarted && testType === "main" && (
+        {testStarted && testType === "main" && mainReviewMode === "active" && (
           <MainDeckTestSession
             verses={testVerses}
             onFinish={handleTestFinish}
           />
+        )}
+
+        {testStarted && testType === "main" && mainReviewMode === "all" && (
+          <TestSession verses={testVerses} onFinish={handleTestFinish} />
         )}
 
         {testCompleted && (
