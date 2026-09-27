@@ -179,7 +179,11 @@ export default function Search() {
 
         {query.trim() && results.length === 0 && (
           <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-white/5 px-4 py-8 text-center">
-            <p className="bible-header-control text-sm">No verses found.</p>
+            <p className="bible-header-control text-sm">
+              {language === "malayalam" && /^[A-Za-z\s]+$/.test(query.trim())
+                ? "Enter the complete English book name to search Malayalam verses."
+                : "No verses found."}
+            </p>
           </div>
         )}
       </div>

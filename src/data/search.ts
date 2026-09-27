@@ -3,6 +3,7 @@ import uFuzzy from "@leeoniya/ufuzzy";
 import type { BibleVerse } from "./bible";
 
 import { MALAYALAM_BOOK_NAMES } from "./malayalamBookNames";
+import { ENGLISH_TO_MALAYALAM_BOOK_NAMES } from "./englishToMalayalamBookNameMappings";
 
 export const englishUFuzzy = new uFuzzy({
   intraMode: 1,
@@ -54,6 +55,76 @@ export const searchEnglish = (
   }));
 };
 
+const normalizeBookName = (value: string) =>
+  value
+    .normalize("NFKC")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase();
+
+const findMalayalamBookName = (bookQuery: string) => {
+  const normalizedBookQuery = normalizeBookName(bookQuery);
+
+  return (
+    Object.entries(ENGLISH_TO_MALAYALAM_BOOK_NAMES).find(
+      ([englishBook]) => normalizeBookName(englishBook) === normalizedBookQuery,
+    )?.[1] ??
+    Object.values(MALAYALAM_BOOK_NAMES).find(
+      (malayalamBook) =>
+        normalizeBookName(malayalamBook) === normalizedBookQuery,
+    )
+  );
+};
+
+const searchMalayalamReference = (verses: BibleVerse[], query: string) => {
+  const match = query.trim().match(/^(.+?)\s+(\d+)\s*(?::\s*(\d+))?$/);
+
+  if (!match) return null;
+
+  const [, bookQuery, chapterString, verseString] = match;
+  const chapter = Number(chapterString);
+  const verseNumber = verseString ? Number(verseString) : undefined;
+
+  const targetMalayalamBook = findMalayalamBookName(bookQuery);
+
+  if (!targetMalayalamBook) return null;
+
+  return verses
+    .filter((verse) => {
+      if (!verse.bookId) return false;
+
+      return (
+        normalizeBookName(MALAYALAM_BOOK_NAMES[verse.bookId] ?? "") ===
+          normalizeBookName(targetMalayalamBook) &&
+        verse.chapter === chapter &&
+        (verseNumber === undefined || verse.verse === verseNumber)
+      );
+    })
+    .map((verse) => ({
+      verse,
+      ranges: undefined,
+    }));
+};
+
+const searchMalayalamBook = (verses: BibleVerse[], query: string) => {
+  const targetMalayalamBook = findMalayalamBookName(query);
+
+  if (!targetMalayalamBook) return null;
+
+  return verses
+    .filter(
+      (verse) =>
+        verse.bookId &&
+        normalizeBookName(MALAYALAM_BOOK_NAMES[verse.bookId] ?? "") ===
+          normalizeBookName(targetMalayalamBook),
+    )
+    .map((verse) => ({
+      verse,
+      ranges: undefined,
+    }));
+};
+
 export const searchMalayalam = (
   verses: BibleVerse[],
   haystack: string[],
@@ -63,6 +134,18 @@ export const searchMalayalam = (
   const normalizedQuery = query.trim().toLocaleLowerCase();
 
   if (normalizedQuery.length === 0) return [];
+
+  const referenceResults = searchMalayalamReference(verses, query);
+
+  if (referenceResults !== null) {
+    return referenceResults.slice(0, maxResults);
+  }
+
+  const bookResults = searchMalayalamBook(verses, query.trim());
+
+  if (bookResults !== null) {
+    return bookResults.slice(0, maxResults);
+  }
 
   return verses
     .map((verse, index) => ({
