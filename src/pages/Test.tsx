@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBible } from "@/context/BibleContext";
 import { ArrowLeft } from "lucide-react";
-import { getMyDecks } from "@/services/decks";
-import { getDeckVersesForManyDecks } from "@/services/deckVerses";
+import { getMyDecks, getMainDeck } from "@/services/decks";
+import {
+  getDeckVerses,
+  getDeckVersesForManyDecks,
+} from "@/services/deckVerses";
 import TestSession from "@/components/test/TestSession";
 import TestComplete from "@/components/test/TestComplete";
 import TestModeSelection from "@/components/test/TestModeSelection";
@@ -11,6 +14,8 @@ import MainDeckSelection from "@/components/test/MainDeckSelection";
 import StudyDeckSelection from "@/components/test/StudyDeckSelection";
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { formatBibleText } from "@/data/bibleText";
+import { getReviewStates } from "@/services/reviewStates";
+import MainDeckTestSession from "@/components/test/MainDeckTestSession";
 
 type Deck = {
   id: string;
@@ -36,6 +41,8 @@ export default function Test() {
   const [mode, setMode] = useState<TestMode>(null);
   const [mainReviewMode, setMainReviewMode] = useState<MainReviewMode>(null);
 
+  const [testType, setTestType] = useState<"main" | "study" | null>(null);
+
   const [testVerses, setTestVerses] = useState<TestVerse[]>([]);
   const [testStarted, setTestStarted] = useState(false);
   const [testCompleted, setTestCompleted] = useState(false);
@@ -45,6 +52,7 @@ export default function Test() {
 
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
+  const [mainDeckEmpty, setMainDeckEmpty] = useState(false);
 
   useEffect(() => {
     const loadDecks = async () => {
@@ -63,6 +71,7 @@ export default function Test() {
 
   const handleStartTest = async () => {
     if (selectedDeckIds.length === 0) return;
+    setTestType("study");
 
     try {
       const verses = await getDeckVersesForManyDecks(selectedDeckIds);
@@ -108,6 +117,83 @@ export default function Test() {
       setTestStarted(true);
     } catch (error) {
       console.error("Failed to load test verses:", error);
+    }
+  };
+
+  const handleStartMainTest = async () => {
+    setTestType("main");
+
+    try {
+      const mainDeck = await getMainDeck();
+      const verses = await getDeckVerses(mainDeck.id);
+
+      const reviewStates = await getReviewStates(
+        verses.map((verse) => ({
+          verseCode: verse.verse_code,
+          language: verse.language,
+        })),
+      );
+
+      const reviewStateMap = new Map(
+        reviewStates.map((state) => [
+          `${state.verse_code}-${state.language}`,
+          state,
+        ]),
+      );
+
+      const activeVerses = verses.filter((verse) => {
+        const state = reviewStateMap.get(
+          `${verse.verse_code}-${verse.language}`,
+        );
+
+        // No review state = brand-new verse
+        if (!state) {
+          return true;
+        }
+
+        // Existing state = include only if due
+        return new Date(state.due_at) <= new Date();
+      });
+
+      const testVerses = activeVerses
+        .map((verse) => {
+          const bibleVerse =
+            verse.language === "english"
+              ? englishMap.get(verse.verse_code)
+              : malayalamMap.get(verse.verse_code);
+
+          if (!bibleVerse) {
+            return null;
+          }
+
+          const reference =
+            verse.language === "english"
+              ? `${bibleVerse.book} ${bibleVerse.chapter}:${bibleVerse.verse}`
+              : `${MALAYALAM_BOOK_NAMES[bibleVerse.bookId!]} ${bibleVerse.chapter}:${bibleVerse.verse}`;
+
+          return {
+            verse_code: verse.verse_code,
+            language: verse.language as "english" | "malayalam",
+            reference,
+            text: formatBibleText(bibleVerse.text),
+          };
+        })
+        .filter((verse): verse is TestVerse => verse !== null);
+
+      if (testVerses.length === 0) {
+        setMainDeckEmpty(true);
+        setTestStarted(false);
+        return;
+      }
+
+      setMainDeckEmpty(false);
+      setTestVerses(testVerses);
+      setTestCompleted(false);
+      setTestDuration(0);
+      setTestStartTime(Date.now());
+      setTestStarted(true);
+    } catch (error) {
+      console.error("Failed to load Main Deck test:", error);
     }
   };
 
@@ -165,6 +251,7 @@ export default function Test() {
 
     if (mainReviewMode) {
       setMainReviewMode(null);
+      setMainDeckEmpty(false);
       return;
     }
 
@@ -194,7 +281,17 @@ export default function Test() {
         {mode === "main" &&
           !mainReviewMode &&
           !testStarted &&
-          !testCompleted && <MainDeckSelection onSelect={setMainReviewMode} />}
+          !testCompleted && (
+            <MainDeckSelection
+              onSelect={(selectedMode) => {
+                setMainReviewMode(selectedMode);
+
+                if (selectedMode === "active") {
+                  handleStartMainTest();
+                }
+              }}
+            />
+          )}
 
         {mode === "study" && !testStarted && !testCompleted && (
           <StudyDeckSelection
@@ -206,8 +303,29 @@ export default function Test() {
           />
         )}
 
-        {testStarted && (
+        {mode === "main" && mainReviewMode === "active" && mainDeckEmpty && (
+          <section className="flex min-h-0 flex-1 items-center justify-center px-2 sm:px-4">
+            <div className="w-full max-w-[480px] rounded-[2rem] border border-(--bible-gold)/35 bg-(--bible-card-bg) px-7 py-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.2)] sm:px-12 sm:py-12">
+              <h2 className="text-xl font-semibold text-(--bible-card-text) sm:text-2xl">
+                You're all caught up
+              </h2>
+
+              <p className="mt-3 text-sm leading-relaxed text-(--bible-page-text)/55 sm:text-base">
+                There are no verses due for review right now.
+              </p>
+            </div>
+          </section>
+        )}
+
+        {testStarted && testType === "study" && (
           <TestSession verses={testVerses} onFinish={handleTestFinish} />
+        )}
+
+        {testStarted && testType === "main" && (
+          <MainDeckTestSession
+            verses={testVerses}
+            onFinish={handleTestFinish}
+          />
         )}
 
         {testCompleted && (

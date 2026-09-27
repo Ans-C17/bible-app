@@ -42,6 +42,29 @@ export async function createDeck(name: string) {
   return data;
 }
 
+export async function getMainDeck() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User is not logged in");
+  }
+
+  const { data, error } = await supabase
+    .from("decks")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("is_default", true)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 // get any decks metadata, i dont think this is needed
 export async function getDeck(deckId: string) {
   const { data, error } = await supabase
