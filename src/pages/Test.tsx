@@ -305,6 +305,8 @@ export default function Test() {
 
     if (testStarted) {
       setTestStarted(false);
+      setMainReviewMode(null);
+      setMainDeckEmpty(false);
       return;
     }
 

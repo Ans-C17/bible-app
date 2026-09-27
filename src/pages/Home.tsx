@@ -1,20 +1,18 @@
 import { useState } from "react";
 
-import { Bell, BookOpen, CircleHelp, Moon, Sun } from "lucide-react";
+import { Bell, BookOpen, CircleHelp, User } from "lucide-react";
 
 import { DailyVerseCard } from "@/components/home/DailyVerseCard";
 import { HomeActions } from "@/components/home/HomeActions";
 
-import { useTheme } from "@/context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
   const [language, setLanguage] = useState<"english" | "malayalam">(
     "malayalam",
   );
-
-  const isLight = theme === "light";
 
   return (
     <main className="bible-page h-dvh overflow-hidden transition-colors duration-500">
@@ -29,22 +27,6 @@ export default function Home() {
           </div>
 
           <nav aria-label="Quick actions" className="flex gap-1.5 lg:gap-2">
-            <button
-              type="button"
-              aria-label={
-                isLight ? "Switch to dark mode" : "Switch to light mode"
-              }
-              title={isLight ? "Switch to dark mode" : "Switch to light mode"}
-              onClick={toggleTheme}
-              className="bible-header-control flex h-11 w-11 items-center justify-center rounded-full transition-colors lg:h-13 lg:w-13"
-            >
-              {isLight ? (
-                <Sun className="h-4.5 w-4.5 lg:h-6 lg:w-6" strokeWidth={1.8} />
-              ) : (
-                <Moon className="h-4.5 w-4.5 lg:h-6 lg:w-6" strokeWidth={1.8} />
-              )}
-            </button>
-
             <button
               type="button"
               aria-label="Open tutorial"
@@ -64,6 +46,16 @@ export default function Home() {
               className="bible-header-control flex h-11 w-11 items-center justify-center rounded-full transition-colors lg:h-13 lg:w-13"
             >
               <Bell className="h-4.5 w-4.5 lg:h-6 lg:w-6" strokeWidth={1.8} />
+            </button>
+
+            <button
+              type="button"
+              aria-label="Open profile"
+              title="Open profile"
+              onClick={() => navigate("/profile")}
+              className="bible-header-control flex h-11 w-11 items-center justify-center rounded-full transition-colors lg:h-13 lg:w-13"
+            >
+              <User className="h-4.5 w-4.5 lg:h-6 lg:w-6" strokeWidth={1.8} />
             </button>
           </nav>
         </header>

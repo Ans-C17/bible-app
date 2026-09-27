@@ -168,6 +168,16 @@ export default function StudyDeckSelection({
           </div>
         </>
       )}
+
+      <p
+        className="mt-10 text-center text-xs"
+        style={{
+          color: "var(--bible-page-text)",
+          opacity: 0.5,
+        }}
+      >
+        Death and Hades were thrown into the lake of fire.
+      </p>
     </section>
   );
 }

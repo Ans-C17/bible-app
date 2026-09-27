@@ -91,6 +91,16 @@ export default function MainDeckSelection({
           </div>
         </button>
       </div>
+
+      <p
+        className="mt-10 text-center text-xs"
+        style={{
+          color: "var(--bible-page-text)",
+          opacity: 0.5,
+        }}
+      >
+        Heaven and earth will pass away, but my words will never pass away.
+      </p>
     </section>
   );
 }

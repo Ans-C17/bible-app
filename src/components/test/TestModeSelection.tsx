@@ -92,6 +92,16 @@ export default function TestModeSelection({
           </div>
         </button>
       </div>
+
+      <p
+        className="mt-10 text-center text-xs"
+        style={{
+          color: "var(--bible-page-text)",
+          opacity: 0.5,
+        }}
+      >
+        If God is for us, who is against us?
+      </p>
     </section>
   );
 }
