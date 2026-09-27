@@ -13,7 +13,12 @@ type TestVerse = {
 
 type MainDeckTestSessionProps = {
   verses: TestVerse[];
-  onFinish: () => void;
+  onFinish: (stats: {
+    forgotCount: number;
+    hardCount: number;
+    goodCount: number;
+    easyCount: number;
+  }) => void;
 };
 
 export default function MainDeckTestSession({
@@ -24,6 +29,10 @@ export default function MainDeckTestSession({
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [forgotCount, setForgotCount] = useState(0);
+  const [hardCount, setHardCount] = useState(0);
+  const [goodCount, setGoodCount] = useState(0);
+  const [easyCount, setEasyCount] = useState(0);
 
   const currentVerse = sessionVerses[currentVerseIndex];
 
@@ -38,6 +47,24 @@ export default function MainDeckTestSession({
     if (submitting) return;
 
     setSubmitting(true);
+
+    const nextForgotCount = forgotCount + (rating === "forgot" ? 1 : 0);
+
+    const nextHardCount = hardCount + (rating === "hard" ? 1 : 0);
+
+    const nextGoodCount = goodCount + (rating === "good" ? 1 : 0);
+
+    const nextEasyCount = easyCount + (rating === "easy" ? 1 : 0);
+
+    if (rating === "forgot") {
+      setForgotCount(nextForgotCount);
+    } else if (rating === "hard") {
+      setHardCount(nextHardCount);
+    } else if (rating === "good") {
+      setGoodCount(nextGoodCount);
+    } else {
+      setEasyCount(nextEasyCount);
+    }
 
     try {
       await recordReview(
@@ -54,7 +81,12 @@ export default function MainDeckTestSession({
       }
 
       if (isLastVerse) {
-        onFinish();
+        onFinish({
+          forgotCount: nextForgotCount,
+          hardCount: nextHardCount,
+          goodCount: nextGoodCount,
+          easyCount: nextEasyCount,
+        });
         return;
       }
 

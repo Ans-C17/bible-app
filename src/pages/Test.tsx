@@ -16,6 +16,7 @@ import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { formatBibleText } from "@/data/bibleText";
 import { getReviewStates } from "@/services/reviewStates";
 import MainDeckTestSession from "@/components/test/MainDeckTestSession";
+import ActiveRecallComplete from "@/components/test/ActiveRecallComplete";
 
 type Deck = {
   id: string;
@@ -49,6 +50,12 @@ export default function Test() {
 
   const [testStartTime, setTestStartTime] = useState<number | null>(null);
   const [testDuration, setTestDuration] = useState(0);
+  const [activeRecallStats, setActiveRecallStats] = useState({
+    forgotCount: 0,
+    hardCount: 0,
+    goodCount: 0,
+    easyCount: 0,
+  });
 
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
@@ -239,11 +246,20 @@ export default function Test() {
     }
   };
 
-  const handleTestFinish = () => {
+  const handleTestFinish = (stats?: {
+    forgotCount: number;
+    hardCount: number;
+    goodCount: number;
+    easyCount: number;
+  }) => {
     if (testStartTime !== null) {
       const duration = Math.floor((Date.now() - testStartTime) / 1000);
 
       setTestDuration(duration);
+    }
+
+    if (stats) {
+      setActiveRecallStats(stats);
     }
 
     setTestStarted(false);
@@ -377,7 +393,19 @@ export default function Test() {
           <TestSession verses={testVerses} onFinish={handleTestFinish} />
         )}
 
-        {testCompleted && (
+        {testCompleted && mainReviewMode === "active" && (
+          <ActiveRecallComplete
+            verseCount={testVerses.length}
+            forgotCount={activeRecallStats.forgotCount}
+            hardCount={activeRecallStats.hardCount}
+            goodCount={activeRecallStats.goodCount}
+            easyCount={activeRecallStats.easyCount}
+            elapsedSeconds={testDuration}
+            onDone={handleDone}
+          />
+        )}
+
+        {testCompleted && mainReviewMode !== "active" && (
           <TestComplete
             verseCount={testVerses.length}
             deckCount={selectedDeckIds.length}
