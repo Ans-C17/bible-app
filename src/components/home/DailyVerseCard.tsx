@@ -188,8 +188,6 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
 
       {showDeckPicker && (
         <DeckPickerPopup
-          verseCode={dailyVerse.code}
-          language={language}
           decks={decks}
           onClose={() => setShowDeckPicker(false)}
           onAdd={async (deckId) => {

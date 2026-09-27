@@ -8,16 +8,12 @@ type Deck = {
 };
 
 type DeckPickerPopupProps = {
-  verseCode: string;
-  language: "english" | "malayalam";
   decks: Deck[];
   onClose: () => void;
   onAdd: (deckId: string) => void;
 };
 
 export default function DeckPickerPopup({
-  verseCode,
-  language,
   decks,
   onClose,
   onAdd,

@@ -190,8 +190,6 @@ export default function Search() {
 
       {selectedVerse && (
         <DeckPickerPopup
-          verseCode={selectedVerse.verseCode}
-          language={selectedVerse.language}
           decks={decks}
           onClose={() => setSelectedVerse(null)}
           onAdd={async (deckId) => {

@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
 import { HomeAction } from "./HomeAction";
 
 const actions = [
@@ -50,19 +49,7 @@ type HomeActionsProps = {
 };
 
 export function HomeActions({ language, onLanguageChange }: HomeActionsProps) {
-  const { user, loading } = useAuth();
   const navigate = useNavigate();
-
-  const requireLogin = (path: string) => {
-    if (loading) return;
-
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    navigate(path);
-  };
 
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
