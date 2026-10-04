@@ -368,7 +368,7 @@ export default function Test() {
 
         {mode === "main" && mainReviewMode === "active" && mainDeckEmpty && (
           <section className="flex min-h-0 flex-1 items-center justify-center px-2 sm:px-4">
-            <div className="w-full max-w-[480px] rounded-[2rem] border border-(--bible-gold)/35 bg-(--bible-card-bg) px-7 py-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.2)] sm:px-12 sm:py-12">
+            <div className="w-full max-w-120 rounded-[2rem] border border-(--bible-gold)/35 bg-(--bible-card-bg) px-7 py-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.2)] sm:px-12 sm:py-12">
               <h2 className="text-xl font-semibold text-(--bible-card-text) sm:text-2xl">
                 You're all caught up
               </h2>

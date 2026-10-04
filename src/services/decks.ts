@@ -79,3 +79,26 @@ export async function getDeck(deckId: string) {
 
   return data;
 }
+
+export async function renameDeck(deckId: string, name: string) {
+  const { data, error } = await supabase
+    .from("decks")
+    .update({ name })
+    .eq("id", deckId)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function deleteDeck(deckId: string) {
+  const { error } = await supabase.from("decks").delete().eq("id", deckId);
+
+  if (error) {
+    throw error;
+  }
+}

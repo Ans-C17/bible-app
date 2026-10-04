@@ -44,3 +44,23 @@ export async function getDeckVersesForManyDecks(deckIds: string[]) {
   if (error) throw error;
   return data;
 }
+
+export async function deleteDeckVerses(deckId: string, verseIds: string[]) {
+  const { error } = await supabase.rpc("delete_deck_verses", {
+    p_deck_id: deckId,
+    p_verse_ids: verseIds,
+  });
+
+  if (error) throw error;
+}
+
+export async function deleteDeckVerse(deckVerseId: string) {
+  const { error } = await supabase
+    .from("deck_verses")
+    .delete()
+    .eq("id", deckVerseId);
+
+  if (error) {
+    throw error;
+  }
+}

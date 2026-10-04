@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import CreateDeckPopup from "@/components/CreateDeckPopup";
+import ConfirmPopup from "@/components/ConfirmPopup";
 
 import {
   ArrowLeft,
   ArrowRight,
   Layers,
+  Pencil,
   PlayingCardsFan,
   Plus,
+  Trash2,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
-import { createDeck, getMyDecks } from "@/services/decks";
+import {
+  createDeck,
+  deleteDeck,
+  getMyDecks,
+  renameDeck,
+} from "@/services/decks";
 
 type Deck = {
   id: string;
@@ -25,6 +33,9 @@ export default function Decks() {
 
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [deckToDelete, setDeckToDelete] = useState<Deck | null>(null);
+  const [deckToRename, setDeckToRename] = useState<Deck | null>(null);
+  const [renameValue, setRenameValue] = useState("");
 
   useEffect(() => {
     getMyDecks().then(setDecks);
@@ -37,6 +48,35 @@ export default function Decks() {
     const deck = await createDeck(name);
     setDecks((current) => [...current, deck]);
     setShowCreateDeck(false);
+  };
+
+  const handleRenameDeck = async () => {
+    if (!deckToRename) return;
+
+    const trimmedName = renameValue.trim();
+
+    if (!trimmedName) return;
+
+    const updatedDeck = await renameDeck(deckToRename.id, trimmedName);
+
+    setDecks((current) =>
+      current.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck)),
+    );
+
+    setDeckToRename(null);
+    setRenameValue("");
+  };
+
+  const handleDeleteDeck = async () => {
+    if (!deckToDelete) return;
+
+    await deleteDeck(deckToDelete.id);
+
+    setDecks((current) =>
+      current.filter((deck) => deck.id !== deckToDelete.id),
+    );
+
+    setDeckToDelete(null);
   };
 
   return (
@@ -177,13 +217,44 @@ export default function Decks() {
                     </h3>
                   </div>
 
-                  <button
-                    type="button"
-                    className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-(--bible-gold)/50 bg-(--bible-gold)/10 px-3.5 py-2 text-sm font-semibold text-(--bible-page-text) shadow-sm transition hover:bg-(--bible-gold)/20"
-                  >
-                    Open
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setDeckToRename(deck);
+                        setRenameValue(deck.name);
+                      }}
+                      aria-label={`Rename ${deck.name}`}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-page-text) transition hover:bg-(--bible-gold)/20"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setDeckToDelete(deck);
+                      }}
+                      aria-label={`Delete ${deck.name}`}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        navigate(`/decks/${deck.id}`);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/50 bg-(--bible-gold)/10 px-3.5 py-2 text-sm font-semibold text-(--bible-page-text) shadow-sm transition hover:bg-(--bible-gold)/20"
+                    >
+                      Open
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -209,10 +280,83 @@ export default function Decks() {
         </p>
       </div>
 
+      {deckToRename && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-[2px]"
+          onClick={() => {
+            setDeckToRename(null);
+            setRenameValue("");
+          }}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-(--bible-gold)/30 bg-(--bible-card-bg) p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-(--bible-card-text)">
+              Rename deck
+            </h2>
+
+            <p className="mt-1.5 text-sm text-(--bible-card-text)/60">
+              Choose a new name for this deck.
+            </p>
+
+            <input
+              type="text"
+              value={renameValue}
+              onChange={(event) => setRenameValue(event.target.value)}
+              autoFocus
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setDeckToRename(null);
+                  setRenameValue("");
+                }
+
+                if (event.key === "Enter") {
+                  handleRenameDeck();
+                }
+              }}
+              className="mt-5 w-full rounded-xl border border-(--bible-gold)/30 bg-transparent px-4 py-3 text-sm text-(--bible-card-text) outline-none transition focus:border-(--bible-gold)"
+            />
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setDeckToRename(null);
+                  setRenameValue("");
+                }}
+                className="rounded-xl border border-(--bible-gold)/30 px-4 py-2.5 text-sm font-semibold text-(--bible-card-text) transition hover:bg-(--bible-gold)/10"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRenameDeck}
+                disabled={!renameValue.trim()}
+                className="rounded-xl bg-(--bible-gold) px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showCreateDeck && (
         <CreateDeckPopup
           onClose={() => setShowCreateDeck(false)}
           onCreate={handleCreateDeck}
+        />
+      )}
+
+      {deckToDelete && (
+        <ConfirmPopup
+          title="Delete this deck?"
+          message={`"${deckToDelete.name}" and all verses inside it will be deleted.`}
+          confirmText="Delete"
+          onClose={() => setDeckToDelete(null)}
+          onConfirm={handleDeleteDeck}
         />
       )}
     </main>
