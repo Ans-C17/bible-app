@@ -27,10 +27,32 @@ export const createEnglishHaystack = (verses: BibleVerse[]) => {
   });
 };
 
+const MALAYALAM_CHILLU_FOLDS: Record<string, string> = {
+  "\u0D7A": "\u0D23\u0D4D",
+  "\u0D7B": "\u0D28\u0D4D",
+  "\u0D7C": "\u0D30\u0D4D",
+  "\u0D7D": "\u0D32\u0D4D",
+  "\u0D7E": "\u0D33\u0D4D",
+  "\u0D7F": "\u0D15\u0D4D",
+};
+
+const normalizeMalayalamSearchText = (value: string) =>
+  value
+    .normalize("NFKC")
+    .replace(
+      /[\u0D7A-\u0D7F]/g,
+      (character) => MALAYALAM_CHILLU_FOLDS[character],
+    )
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase();
+
 export const createMalayalamHaystack = (verses: BibleVerse[]) => {
-  return verses.map(
-    (verse) =>
+  return verses.map((verse) =>
+    normalizeMalayalamSearchText(
       `${verse.text} | ${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`,
+    ),
   );
 };
 
@@ -131,7 +153,7 @@ export const searchMalayalam = (
   query: string,
   maxResults = 100,
 ) => {
-  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const normalizedQuery = normalizeMalayalamSearchText(query);
 
   if (normalizedQuery.length === 0) return [];
 
