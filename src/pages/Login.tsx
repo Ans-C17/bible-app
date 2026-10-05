@@ -55,43 +55,17 @@ export default function Login() {
 
     console.log(isSignup ? "Signup successful!" : "Logged in!");
   };
-  {
-    /* Name */
-  }
-  {
-    isSignup && (
-      <div>
-        <label htmlFor="name" className="mb-2 block text-sm font-medium">
-          Name
-        </label>
-
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
-          required
-          autoComplete="name"
-          className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
-          style={{
-            backgroundColor:
-              "color-mix(in srgb, var(--bible-card-text) 7%, transparent)",
-            borderColor:
-              "color-mix(in srgb, var(--bible-card-text) 20%, transparent)",
-            color: "var(--bible-card-text)",
-          }}
-        />
-      </div>
-    );
-  }
 
   return (
     // <main className="bible-page min-h-dvh flex items-center justify-center px-5 py-10 sm:px-8">
-    <main className="bible-page h-dvh overflow-hidden flex items-center justify-center px-5 py-6 sm:px-8">
-      <div className="w-full max-w-md">
+    <main className="bible-page flex min-h-dvh items-center justify-center overflow-y-auto px-5 py-6 sm:px-8">
+      <div className={`w-full ${isSignup ? "max-w-sm" : "max-w-md"}`}>
         {/* Header */}
-        <div className="bible-gold mb-8 flex items-center justify-center gap-2 text-sm font-medium tracking-wide sm:text-base lg:gap-3 lg:text-lg">
+        <div
+          className={`bible-gold flex items-center justify-center gap-2 text-sm font-medium tracking-wide sm:text-base lg:gap-3 lg:text-lg ${
+            isSignup ? "mb-5" : "mb-8"
+          }`}
+        >
           <BookOpen
             className="bible-gold h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-7 lg:w-7"
             strokeWidth={1.8}
@@ -101,15 +75,17 @@ export default function Login() {
         </div>
 
         {/* Heading */}
-        <div className="mb-8 text-center">
+        <div className={isSignup ? "mb-5 text-center" : "mb-8 text-center"}>
           <h1
-            className="text-3xl font-semibold tracking-tight sm:text-4xl"
+            className={`font-semibold tracking-tight ${
+              isSignup ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl"
+            }`}
             style={{ color: "var(--bible-page-text)" }}
           >
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
 
-          <p className="mt-2 text-sm sm:text-base">
+          <p className={isSignup ? "mt-1 text-xs sm:text-sm" : "mt-2 text-sm sm:text-base"}>
             {isSignup
               ? "Start building your Scripture memory journey."
               : "Continue your Scripture memory journey."}
@@ -118,7 +94,9 @@ export default function Login() {
 
         {/* Card */}
         <div
-          className="rounded-3xl border p-6 shadow-xl sm:p-8"
+          className={`rounded-3xl border shadow-xl ${
+            isSignup ? "p-5 sm:p-6" : "p-6 sm:p-8"
+          }`}
           style={{
             background:
               "radial-gradient(circle at top, #fffaf0 0%, #f3e5cf 100%)",
@@ -132,11 +110,40 @@ export default function Login() {
               e.preventDefault();
               handleSubmit();
             }}
-            className="space-y-5"
+            className={isSignup ? "space-y-3.5" : "space-y-5"}
           >
+            {/* Name */}
+            {isSignup && (
+              <div>
+                <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
+                  Name
+                </label>
+
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  required
+                  autoComplete="name"
+                  className={`w-full rounded-xl border px-4 text-sm outline-none transition focus:ring-2 ${
+                    isSignup ? "py-2.5" : "py-3"
+                  }`}
+                  style={{
+                    backgroundColor:
+                      "color-mix(in srgb, var(--bible-card-text) 7%, transparent)",
+                    borderColor:
+                      "color-mix(in srgb, var(--bible-card-text) 20%, transparent)",
+                    color: "var(--bible-card-text)",
+                  }}
+                />
+              </div>
+            )}
+
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-medium">
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
                 Email
               </label>
 
@@ -148,7 +155,9 @@ export default function Login() {
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
-                className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+                className={`w-full rounded-xl border px-4 text-sm outline-none transition focus:ring-2 ${
+                  isSignup ? "py-2.5" : "py-3"
+                }`}
                 style={{
                   backgroundColor:
                     "color-mix(in srgb, var(--bible-card-text) 7%, transparent)",
@@ -176,7 +185,9 @@ export default function Login() {
                 placeholder="••••••••"
                 required
                 autoComplete={isSignup ? "new-password" : "current-password"}
-                className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+                className={`w-full rounded-xl border px-4 text-sm outline-none transition focus:ring-2 ${
+                  isSignup ? "py-2.5" : "py-3"
+                }`}
                 style={{
                   backgroundColor:
                     "color-mix(in srgb, var(--bible-card-text) 7%, transparent)",
