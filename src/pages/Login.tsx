@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 
+import { upsertMyProfile } from "@/services/profiles";
 import { supabase } from "@/services/supabase";
 
 export default function Login() {
@@ -9,6 +10,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,6 +23,11 @@ export default function Login() {
       ? await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              name: name.trim(),
+            },
+          },
         })
       : await supabase.auth.signInWithPassword({
           email,
@@ -34,10 +41,50 @@ export default function Login() {
       return;
     }
 
+    if (isSignup && result.data.session) {
+      try {
+        await upsertMyProfile(name);
+      } catch (profileError) {
+        console.error("Failed to save profile:", profileError);
+        setError("Your account was created, but your name could not be saved.");
+        return;
+      }
+    }
+
     navigate("/");
 
     console.log(isSignup ? "Signup successful!" : "Logged in!");
   };
+  {
+    /* Name */
+  }
+  {
+    isSignup && (
+      <div>
+        <label htmlFor="name" className="mb-2 block text-sm font-medium">
+          Name
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your name"
+          required
+          autoComplete="name"
+          className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--bible-card-text) 7%, transparent)",
+            borderColor:
+              "color-mix(in srgb, var(--bible-card-text) 20%, transparent)",
+            color: "var(--bible-card-text)",
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     // <main className="bible-page min-h-dvh flex items-center justify-center px-5 py-10 sm:px-8">
