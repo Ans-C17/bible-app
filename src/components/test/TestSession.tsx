@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MousePointerClick, BookOpen } from "lucide-react";
+import { getVerseFontSize } from "@/data/bibleText";
 
 type TestVerse = {
   verse_code: string;
@@ -139,7 +140,8 @@ export default function TestSession({ verses, onFinish }: TestSessionProps) {
                     currentVerse.language === "malayalam" ? "font-anek" : ""
                   }`}
                   style={{
-                    fontSize: "clamp(0.95rem, 2.4vw, 1.3rem)",
+                    fontSize: getVerseFontSize(currentVerse.text),
+                    overflowWrap: "anywhere",
                   }}
                   dangerouslySetInnerHTML={{
                     __html: currentVerse.text,

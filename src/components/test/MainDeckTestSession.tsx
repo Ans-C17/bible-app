@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { BookOpen } from "lucide-react";
 
+import { getVerseFontSize } from "@/data/bibleText";
 import { recordReview, type ReviewRating } from "@/services/reviewStates";
 
 type TestVerse = {
@@ -157,7 +158,8 @@ export default function MainDeckTestSession({
                     currentVerse.language === "malayalam" ? "font-anek" : ""
                   }`}
                   style={{
-                    fontSize: "clamp(0.95rem, 2.4vw, 1.3rem)",
+                    fontSize: getVerseFontSize(currentVerse.text),
+                    overflowWrap: "anywhere",
                   }}
                   dangerouslySetInnerHTML={{
                     __html: currentVerse.text,
