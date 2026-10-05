@@ -85,7 +85,11 @@ export default function Login() {
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
 
-          <p className={isSignup ? "mt-1 text-xs sm:text-sm" : "mt-2 text-sm sm:text-base"}>
+          <p
+            className={
+              isSignup ? "mt-1 text-xs sm:text-sm" : "mt-2 text-sm sm:text-base"
+            }
+          >
             {isSignup
               ? "Start building your Scripture memory journey."
               : "Continue your Scripture memory journey."}
@@ -115,7 +119,10 @@ export default function Login() {
             {/* Name */}
             {isSignup && (
               <div>
-                <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
+                <label
+                  htmlFor="name"
+                  className="mb-1.5 block text-sm font-medium"
+                >
                   Name
                 </label>
 
@@ -143,7 +150,10 @@ export default function Login() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-sm font-medium"
+              >
                 Email
               </label>
 
