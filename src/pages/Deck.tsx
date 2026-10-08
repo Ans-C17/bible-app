@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import ConfirmPopup from "@/components/ConfirmPopup";
+import LoadingState from "@/components/LoadingState";
 import { MALAYALAM_BOOK_NAMES } from "@/data/malayalamBookNames";
 import { formatBibleText } from "@/data/bibleText";
 import { useBible } from "@/context/BibleContext";
 import { getDeck } from "@/services/decks";
-import {
-  deleteDeckVerses,
-  getDeckVerses as fetchDeckVerses,
-} from "@/services/deckVerses";
+import { deleteDeckVerses, getDeckVerses } from "@/services/deckVerses";
 
 type Deck = {
   id: string;
@@ -30,24 +29,33 @@ type DeckVerse = {
 
 export default function Deck() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { deckId } = useParams();
 
   const { englishMap, malayalamMap } = useBible();
 
-  const [deck, setDeck] = useState<Deck | null>(null);
-  const [verses, setVerses] = useState<DeckVerse[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedVerseIds, setSelectedVerseIds] = useState<string[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!deckId) return;
+  const deckQueryKey = ["deck", deckId] as const;
+  const versesQueryKey = ["deckVerses", deckId] as const;
 
-    getDeck(deckId).then(setDeck);
-    fetchDeckVerses(deckId).then(setVerses);
-  }, [deckId]);
+  const deckQuery = useQuery({
+    queryKey: deckQueryKey,
+    queryFn: () => getDeck(deckId!),
+    enabled: Boolean(deckId),
+  });
+
+  const versesQuery = useQuery({
+    queryKey: versesQueryKey,
+    queryFn: async () => (await getDeckVerses(deckId!)) as DeckVerse[],
+    enabled: Boolean(deckId),
+  });
+
+  const deck = deckQuery.data as Deck | undefined;
+  const verses = versesQuery.data ?? [];
 
   const cancelSelection = () => {
     setIsSelectionMode(false);
@@ -69,25 +77,37 @@ export default function Deck() {
     setShowDeleteConfirmation(true);
   };
 
-  const handleDeleteVerses = async () => {
-    if (!deckId || selectedVerseIds.length === 0 || isDeleting) return;
-
-    setIsDeleting(true);
-    setDeleteError(null);
-
-    try {
-      await deleteDeckVerses(deckId, selectedVerseIds);
-
-      setVerses((current) =>
-        current.filter((verse) => !selectedVerseIds.includes(verse.id)),
+  const deleteVersesMutation = useMutation({
+    mutationFn: ({
+      deckId: targetDeckId,
+      verseIds,
+    }: {
+      deckId: string;
+      verseIds: string[];
+    }) => deleteDeckVerses(targetDeckId, verseIds),
+    onSuccess: (_data, variables) => {
+      queryClient.setQueryData<DeckVerse[]>(versesQueryKey, (current) =>
+        current?.filter((verse) => !variables.verseIds.includes(verse.id)),
       );
       cancelSelection();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Failed to delete deck verses:", error);
       setDeleteError("Failed to delete verses. Please try again.");
-    } finally {
-      setIsDeleting(false);
+    },
+  });
+
+  const handleDeleteVerses = () => {
+    if (
+      !deckId ||
+      selectedVerseIds.length === 0 ||
+      deleteVersesMutation.isPending
+    ) {
+      return;
     }
+
+    setDeleteError(null);
+    deleteVersesMutation.mutate({ deckId, verseIds: selectedVerseIds });
   };
 
   return (
@@ -175,90 +195,108 @@ export default function Deck() {
           </div>
         </div>
 
-        {verses.length > 0 && (
-          <div className="mt-6 space-y-3">
-            {verses.map((deckVerse) => {
-              const verse =
-                deckVerse.language === "english"
-                  ? englishMap.get(deckVerse.verse_code)
-                  : malayalamMap.get(deckVerse.verse_code);
+        {(deckQuery.isPending || versesQuery.isPending) && (
+          <LoadingState message="Loading this deck and its verses" />
+        )}
 
-              if (!verse) return null;
+        {(deckQuery.isError || versesQuery.isError) && (
+          <p className="mt-8 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            We could not load this deck right now.
+          </p>
+        )}
 
-              return (
-                <div
-                  key={deckVerse.id}
-                  className={`bible-verse-card rounded-xl border p-4 shadow-sm ${
-                    isSelectionMode ? "flex items-start gap-3" : ""
-                  }`}
-                >
-                  {isSelectionMode && (
-                    <button
-                      type="button"
-                      onClick={() => toggleVerseSelection(deckVerse.id)}
-                      aria-label={`Select ${
-                        deckVerse.language === "english"
-                          ? `${verse.book} ${verse.chapter}:${verse.verse}`
-                          : `${MALAYALAM_BOOK_NAMES[verse.bookId!]}`
-                      }`}
-                      aria-pressed={selectedVerseIds.includes(deckVerse.id)}
-                      className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition ${
-                        selectedVerseIds.includes(deckVerse.id)
-                          ? "border-(--bible-gold) bg-(--bible-gold) text-white"
-                          : "border-(--bible-card-text)/30 text-transparent hover:border-(--bible-gold)/70"
-                      }`}
-                    >
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                    </button>
-                  )}
+        {!deckQuery.isPending &&
+          !versesQuery.isPending &&
+          !deckQuery.isError &&
+          !versesQuery.isError &&
+          verses.length > 0 && (
+            <div className="mt-6 space-y-3">
+              {verses.map((deckVerse) => {
+                const verse =
+                  deckVerse.language === "english"
+                    ? englishMap.get(deckVerse.verse_code)
+                    : malayalamMap.get(deckVerse.verse_code);
 
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={`bible-verse-text leading-relaxed ${
-                        deckVerse.language === "malayalam"
-                          ? "font-anek"
-                          : "font-medium"
-                      }`}
-                      dangerouslySetInnerHTML={{
-                        __html: formatBibleText(verse.text),
-                      }}
-                    />
+                if (!verse) return null;
 
-                    <div className="mt-3 flex justify-end">
+                return (
+                  <div
+                    key={deckVerse.id}
+                    className={`bible-verse-card rounded-xl border p-4 shadow-sm ${
+                      isSelectionMode ? "flex items-start gap-3" : ""
+                    }`}
+                  >
+                    {isSelectionMode && (
+                      <button
+                        type="button"
+                        onClick={() => toggleVerseSelection(deckVerse.id)}
+                        aria-label={`Select ${
+                          deckVerse.language === "english"
+                            ? `${verse.book} ${verse.chapter}:${verse.verse}`
+                            : `${MALAYALAM_BOOK_NAMES[verse.bookId!]}`
+                        }`}
+                        aria-pressed={selectedVerseIds.includes(deckVerse.id)}
+                        className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition ${
+                          selectedVerseIds.includes(deckVerse.id)
+                            ? "border-(--bible-gold) bg-(--bible-gold) text-white"
+                            : "border-(--bible-card-text)/30 text-transparent hover:border-(--bible-gold)/70"
+                        }`}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                      </button>
+                    )}
+
+                    <div className="min-w-0 flex-1">
                       <p
-                        className={`bible-verse-meta text-sm underline underline-offset-2 ${
+                        className={`bible-verse-text leading-relaxed ${
                           deckVerse.language === "malayalam"
                             ? "font-anek"
                             : "font-medium"
                         }`}
-                      >
-                        {deckVerse.language === "english"
-                          ? `${verse.book} ${verse.chapter}:${verse.verse}`
-                          : `${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`}
-                      </p>
+                        dangerouslySetInnerHTML={{
+                          __html: formatBibleText(verse.text),
+                        }}
+                      />
+
+                      <div className="mt-3 flex justify-end">
+                        <p
+                          className={`bible-verse-meta text-sm underline underline-offset-2 ${
+                            deckVerse.language === "malayalam"
+                              ? "font-anek"
+                              : "font-medium"
+                          }`}
+                        >
+                          {deckVerse.language === "english"
+                            ? `${verse.book} ${verse.chapter}:${verse.verse}`
+                            : `${MALAYALAM_BOOK_NAMES[verse.bookId!]} ${verse.chapter}:${verse.verse}`}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {verses.length === 0 && (
-          <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-white/5 px-4 py-10 text-center">
-            <p className="bible-header-control text-sm">
-              This deck has no verses yet
-            </p>
+        {!deckQuery.isPending &&
+          !versesQuery.isPending &&
+          !deckQuery.isError &&
+          !versesQuery.isError &&
+          verses.length === 0 && (
+            <div className="mt-8 rounded-xl border border-(--bible-gold)/30 bg-white/5 px-4 py-10 text-center">
+              <p className="bible-header-control text-sm">
+                This deck has no verses yet
+              </p>
 
-            <button
-              type="button"
-              onClick={() => navigate("/search")}
-              className="mt-4 rounded-xl bg-(--bible-gold) px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              Add Verses
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                onClick={() => navigate("/search")}
+                className="mt-4 rounded-xl bg-(--bible-gold) px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+              >
+                Add Verses
+              </button>
+            </div>
+          )}
 
         <p
           className="mt-10 text-center text-xs"

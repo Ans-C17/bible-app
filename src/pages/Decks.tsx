@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CreateDeckPopup from "@/components/CreateDeckPopup";
 import ConfirmPopup from "@/components/ConfirmPopup";
+import LoadingState from "@/components/LoadingState";
 
 import {
   ArrowLeft,
@@ -155,11 +156,7 @@ export default function Decks() {
           </div>
         </div>
 
-        {decksQuery.isPending && (
-          <p className="mt-8 text-center text-sm text-(--bible-page-text)/60">
-            Loading decks...
-          </p>
-        )}
+        {decksQuery.isPending && <LoadingState message="Loading your decks" />}
 
         {(decksQuery.isError || actionError) && (
           <p className="mt-8 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -167,159 +164,163 @@ export default function Decks() {
           </p>
         )}
 
-        {/* Main Deck */}
-        {mainDeck && (
-          <section className="mt-10">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
-              Main Deck
-            </h2>
+        {!decksQuery.isPending && !decksQuery.isError && (
+          <>
+            {/* Main Deck */}
+            {mainDeck && (
+              <section className="mt-10">
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
+                  Main Deck
+                </h2>
 
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                navigate(`/decks/${mainDeck.id}`);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  navigate(`/decks/${mainDeck.id}`);
-                }
-              }}
-              className="cursor-pointer overflow-hidden rounded-2xl border border-(--bible-gold)/45 bg-(--bible-card-bg) transition hover:border-(--bible-gold)/70 hover:shadow-md"
-            >
-              <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                <div className="flex min-w-0 items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-card-meta)">
-                    <PlayingCardsFan className="h-5 w-5" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <h3 className="truncate text-lg font-semibold text-(--bible-card-text)">
-                      {mainDeck.name}
-                    </h3>
-
-                    <p className="mt-0.5 text-sm text-(--bible-card-text)/55">
-                      Add verses here for spaced repetition
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    navigate(`/decks/${mainDeck.id}`);
-                  }}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-(--bible-gold)/60 bg-(--bible-gold)/10 px-4 py-2.5 text-sm font-semibold text-(--bible-card-text) shadow-sm transition hover:bg-(--bible-gold)/20 sm:w-auto"
-                >
-                  Open
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Other Decks */}
-        <section className="mt-10">
-          <div className="mb-3 flex items-end justify-between">
-            <div>
-              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
-                Other Decks
-              </h2>
-            </div>
-
-            {otherDecks.length > 0 && (
-              <span className="text-sm text-(--bible-page-text)/40">
-                {otherDecks.length}
-              </span>
-            )}
-          </div>
-
-          {otherDecks.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-(--bible-gold)/25 bg-white/5">
-              {otherDecks.map((deck, index) => (
                 <div
-                  key={deck.id}
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    navigate(`/decks/${deck.id}`);
+                    navigate(`/decks/${mainDeck.id}`);
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
-                      navigate(`/decks/${deck.id}`);
+                      navigate(`/decks/${mainDeck.id}`);
                     }
                   }}
-                  className={`cursor-pointer flex items-center gap-4 px-4 py-4 transition hover:bg-(--bible-gold)/5 sm:px-5 ${
-                    index !== otherDecks.length - 1
-                      ? "border-b border-(--bible-gold)/15"
-                      : ""
-                  }`}
+                  className="cursor-pointer overflow-hidden rounded-2xl border border-(--bible-gold)/45 bg-(--bible-card-bg) transition hover:border-(--bible-gold)/70 hover:shadow-md"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-(--bible-gold)/25 text-(--bible-gold)">
-                    <Layers className="h-4 w-4" />
-                  </div>
+                  <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-card-meta)">
+                        <PlayingCardsFan className="h-5 w-5" />
+                      </div>
 
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-medium text-(--bible-page-text)">
-                      {deck.name}
-                    </h3>
-                  </div>
+                      <div className="min-w-0">
+                        <h3 className="truncate text-lg font-semibold text-(--bible-card-text)">
+                          {mainDeck.name}
+                        </h3>
 
-                  <div className="flex shrink-0 items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setDeckToRename(deck);
-                        setRenameValue(deck.name);
-                      }}
-                      aria-label={`Rename ${deck.name}`}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-page-text) transition hover:bg-(--bible-gold)/20"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
+                        <p className="mt-0.5 text-sm text-(--bible-card-text)/55">
+                          Add verses here for spaced repetition
+                        </p>
+                      </div>
+                    </div>
 
                     <button
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation();
-                        setDeckToDelete(deck);
+                        navigate(`/decks/${mainDeck.id}`);
                       }}
-                      aria-label={`Delete ${deck.name}`}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        navigate(`/decks/${deck.id}`);
-                      }}
-                      className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/50 bg-(--bible-gold)/10 px-3.5 py-2 text-sm font-semibold text-(--bible-page-text) shadow-sm transition hover:bg-(--bible-gold)/20"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-(--bible-gold)/60 bg-(--bible-gold)/10 px-4 py-2.5 text-sm font-semibold text-(--bible-card-text) shadow-sm transition hover:bg-(--bible-gold)/20 sm:w-auto"
                     >
                       Open
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-(--bible-gold)/25 bg-white/5 px-6 py-10 text-center">
-              <Layers className="mx-auto h-6 w-6 text-(--bible-gold)/60" />
+              </section>
+            )}
 
-              <p className="mt-4 text-sm text-(--bible-page-text)/55">
-                No other decks yet.
-              </p>
-            </div>
-          )}
-        </section>
+            {/* Other Decks */}
+            <section className="mt-10">
+              <div className="mb-3 flex items-end justify-between">
+                <div>
+                  <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-(--bible-page-text)/45">
+                    Other Decks
+                  </h2>
+                </div>
+
+                {otherDecks.length > 0 && (
+                  <span className="text-sm text-(--bible-page-text)/40">
+                    {otherDecks.length}
+                  </span>
+                )}
+              </div>
+
+              {otherDecks.length > 0 ? (
+                <div className="overflow-hidden rounded-2xl border border-(--bible-gold)/25 bg-white/5">
+                  {otherDecks.map((deck, index) => (
+                    <div
+                      key={deck.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        navigate(`/decks/${deck.id}`);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          navigate(`/decks/${deck.id}`);
+                        }
+                      }}
+                      className={`cursor-pointer flex items-center gap-4 px-4 py-4 transition hover:bg-(--bible-gold)/5 sm:px-5 ${
+                        index !== otherDecks.length - 1
+                          ? "border-b border-(--bible-gold)/15"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-(--bible-gold)/25 text-(--bible-gold)">
+                        <Layers className="h-4 w-4" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <h3 className="truncate font-medium text-(--bible-page-text)">
+                          {deck.name}
+                        </h3>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setDeckToRename(deck);
+                            setRenameValue(deck.name);
+                          }}
+                          aria-label={`Rename ${deck.name}`}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-(--bible-gold)/40 bg-(--bible-gold)/10 text-(--bible-page-text) transition hover:bg-(--bible-gold)/20"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setDeckToDelete(deck);
+                          }}
+                          aria-label={`Delete ${deck.name}`}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/decks/${deck.id}`);
+                          }}
+                          className="inline-flex items-center gap-2 rounded-xl border border-(--bible-gold)/50 bg-(--bible-gold)/10 px-3.5 py-2 text-sm font-semibold text-(--bible-page-text) shadow-sm transition hover:bg-(--bible-gold)/20"
+                        >
+                          Open
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-(--bible-gold)/25 bg-white/5 px-6 py-10 text-center">
+                  <Layers className="mx-auto h-6 w-6 text-(--bible-gold)/60" />
+
+                  <p className="mt-4 text-sm text-(--bible-page-text)/55">
+                    No other decks yet.
+                  </p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
 
         <p
           className="mt-10 text-center text-xs"

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingState from "@/components/LoadingState";
 import { useBible } from "@/context/BibleContext";
 import { ArrowLeft } from "lucide-react";
 import { getMyDecks, getMainDeck } from "@/services/decks";
@@ -58,6 +59,8 @@ export default function Test() {
   });
 
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [decksLoading, setDecksLoading] = useState(true);
+  const [decksError, setDecksError] = useState(false);
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
   const [mainDeckEmpty, setMainDeckEmpty] = useState(false);
 
@@ -68,6 +71,9 @@ export default function Test() {
         setDecks(data);
       } catch (error) {
         console.error("Failed to load decks:", error);
+        setDecksError(true);
+      } finally {
+        setDecksLoading(false);
       }
     };
 
@@ -356,15 +362,33 @@ export default function Test() {
             />
           )}
 
-        {mode === "study" && !testStarted && !testCompleted && (
-          <StudyDeckSelection
-            studyDecks={studyDecks}
-            selectedDeckIds={selectedDeckIds}
-            onToggleDeck={toggleDeck}
-            onToggleAll={toggleAllDecks}
-            onStartTest={handleStartTest}
-          />
+        {mode === "study" && !testStarted && !testCompleted && decksLoading && (
+          <LoadingState message="Loading your study decks" />
         )}
+
+        {mode === "study" &&
+          !testStarted &&
+          !testCompleted &&
+          !decksLoading &&
+          decksError && (
+            <p className="mx-auto mt-8 max-w-md rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-center text-sm text-red-100">
+              We could not load your study decks right now.
+            </p>
+          )}
+
+        {mode === "study" &&
+          !testStarted &&
+          !testCompleted &&
+          !decksLoading &&
+          !decksError && (
+            <StudyDeckSelection
+              studyDecks={studyDecks}
+              selectedDeckIds={selectedDeckIds}
+              onToggleDeck={toggleDeck}
+              onToggleAll={toggleAllDecks}
+              onStartTest={handleStartTest}
+            />
+          )}
 
         {mode === "main" && mainReviewMode === "active" && mainDeckEmpty && (
           <section className="flex min-h-0 flex-1 items-center justify-center px-2 sm:px-4">

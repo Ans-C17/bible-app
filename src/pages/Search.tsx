@@ -45,9 +45,17 @@ export default function Search() {
   } | null>(null);
 
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [decksLoading, setDecksLoading] = useState(true);
 
   useEffect(() => {
-    getMyDecks().then(setDecks);
+    getMyDecks()
+      .then(setDecks)
+      .catch((error) => {
+        console.error("Failed to load decks:", error);
+      })
+      .finally(() => {
+        setDecksLoading(false);
+      });
   }, []);
 
   const englishHaystack = useMemo(
@@ -191,6 +199,7 @@ export default function Search() {
       {selectedVerse && (
         <DeckPickerPopup
           decks={decks}
+          loading={decksLoading}
           onClose={() => setSelectedVerse(null)}
           onAdd={async (deckId) => {
             try {

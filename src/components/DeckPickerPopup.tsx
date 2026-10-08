@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import LoadingState from "@/components/LoadingState";
+
 type Deck = {
   id: string;
   name: string;
@@ -9,12 +11,14 @@ type Deck = {
 
 type DeckPickerPopupProps = {
   decks: Deck[];
+  loading?: boolean;
   onClose: () => void;
   onAdd: (deckId: string) => void;
 };
 
 export default function DeckPickerPopup({
   decks,
+  loading = false,
   onClose,
   onAdd,
 }: DeckPickerPopupProps) {
@@ -53,33 +57,37 @@ export default function DeckPickerPopup({
           </button>
         </div>
 
-        <div className="mt-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--bible-card-text)/45">
-            Main Deck
-          </p>
+        {loading ? (
+          <LoadingState message="Loading your decks" />
+        ) : (
+          <div className="mt-6">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--bible-card-text)/45">
+              Main Deck
+            </p>
 
-          {mainDeck && (
-            <button
-              type="button"
-              onClick={() => setSelectedDeckId(mainDeck.id)}
-              className={`w-full rounded-xl border p-4 text-left transition ${
-                selectedDeckId === mainDeck.id
-                  ? "border-(--bible-gold) bg-(--bible-gold)/10"
-                  : "border-(--bible-gold)/30 hover:bg-(--bible-gold)/5"
-              }`}
-            >
-              <p className="font-medium text-(--bible-card-text)">
-                {mainDeck.name}
-              </p>
+            {mainDeck && (
+              <button
+                type="button"
+                onClick={() => setSelectedDeckId(mainDeck.id)}
+                className={`w-full rounded-xl border p-4 text-left transition ${
+                  selectedDeckId === mainDeck.id
+                    ? "border-(--bible-gold) bg-(--bible-gold)/10"
+                    : "border-(--bible-gold)/30 hover:bg-(--bible-gold)/5"
+                }`}
+              >
+                <p className="font-medium text-(--bible-card-text)">
+                  {mainDeck.name}
+                </p>
 
-              <p className="mt-1 text-sm text-(--bible-card-text)/65">
-                Your memorization deck
-              </p>
-            </button>
-          )}
-        </div>
+                <p className="mt-1 text-sm text-(--bible-card-text)/65">
+                  Your memorization deck
+                </p>
+              </button>
+            )}
+          </div>
+        )}
 
-        {otherDecks.length > 0 && (
+        {!loading && otherDecks.length > 0 && (
           <div className="mt-5">
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-(--bible-card-text)/45">
               Other Decks

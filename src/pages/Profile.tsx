@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import LoadingState from "@/components/LoadingState";
 import { useAuth } from "@/context/AuthContext";
 import { getMyDecks } from "@/services/decks";
 import { getMyProfile, type Profile } from "@/services/profiles";
@@ -101,11 +102,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {loading && (
-          <p className="bible-header-control mt-8 text-center text-sm">
-            Loading profile...
-          </p>
-        )}
+        {loading && <LoadingState message="Loading your profile and decks" />}
 
         {errorMessage && (
           <p className="mt-8 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">

@@ -5,6 +5,7 @@ import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { Plus, Sparkles } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import LoadingState from "@/components/LoadingState";
 
 import { useBible } from "@/context/BibleContext";
 
@@ -36,8 +37,10 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
   const { englishMap, malayalamMap } = useBible();
 
   const [dailyVerseCodes, setDailyVerseCodes] = useState<string[]>([]);
+  const [dailyVerseLoading, setDailyVerseLoading] = useState(true);
 
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [decksLoading, setDecksLoading] = useState(true);
 
   const [showDeckPicker, setShowDeckPicker] = useState(false);
 
@@ -60,6 +63,9 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        setDailyVerseLoading(false);
       });
   }, []);
 
@@ -68,6 +74,9 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
       .then(setDecks)
       .catch((error) => {
         console.error("Failed to load decks:", error);
+      })
+      .finally(() => {
+        setDecksLoading(false);
       });
   }, []);
 
@@ -136,7 +145,11 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
     return () => ro.disconnect();
   }, [verse]);
 
-  if (!dailyVerse) return null;
+  if (!dailyVerse) {
+    return dailyVerseLoading ? (
+      <LoadingState message="Loading today's verse" />
+    ) : null;
+  }
 
   return (
     <>
@@ -189,6 +202,7 @@ export function DailyVerseCard({ language }: DailyVerseCardProps) {
       {showDeckPicker && (
         <DeckPickerPopup
           decks={decks}
+          loading={decksLoading}
           onClose={() => setShowDeckPicker(false)}
           onAdd={async (deckId) => {
             try {

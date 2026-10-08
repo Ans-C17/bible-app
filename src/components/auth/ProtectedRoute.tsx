@@ -10,7 +10,7 @@ export default function ProtectedRoute({
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen message="Checking your session" />;
   }
 
   if (!user) {

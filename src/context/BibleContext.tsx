@@ -34,7 +34,7 @@ export function BibleProvider({ children }: BibleProviderProps) {
   }, []);
 
   if (!bible) {
-    return <LoadingScreen />;
+    return <LoadingScreen message="Loading the Bible" />;
   }
 
   return (

@@ -1,6 +1,12 @@
 import { BookOpen } from "lucide-react";
 
-export default function LoadingScreen() {
+type LoadingScreenProps = {
+  message?: string;
+};
+
+export default function LoadingScreen({
+  message = "Loading your Bible",
+}: LoadingScreenProps) {
   return (
     <main className="loading-screen">
       <div className="loading-content" role="status" aria-live="polite">
@@ -11,7 +17,7 @@ export default function LoadingScreen() {
         <p className="loading-title">Memory Bible</p>
 
         <p className="loading-label">
-          Loading
+          {message}
           <span className="loading-dots" aria-hidden="true">
             ...
           </span>
