@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,10 +8,11 @@ import {
   UserRound,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/context/AuthContext";
 import { getMyDecks } from "@/services/decks";
-import { ensureMyProfile, type Profile } from "@/services/profiles";
+import { getMyProfile, type Profile } from "@/services/profiles";
 import { supabase } from "@/services/supabase";
 
 type Deck = {
@@ -23,58 +24,56 @@ type Deck = {
 
 export default function Profile() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [decks, setDecks] = useState<Deck[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [signingOut, setSigningOut] = useState(false);
+  const [actionError, setActionError] = useState("");
 
-  useEffect(() => {
-    if (!user) return;
+  const fallbackName =
+    (user?.user_metadata?.name as string | undefined) ??
+    user?.email?.split("@")[0] ??
+    "Bible learner";
 
-    let active = true;
+  const profileQuery = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: getMyProfile,
+    enabled: Boolean(user),
+  });
 
-    const load = async () => {
-      try {
-        const fallbackName =
-          (user.user_metadata?.name as string | undefined) ??
-          user.email?.split("@")[0] ??
-          "Bible learner";
-        const [profileData, deckData] = await Promise.all([
-          ensureMyProfile(fallbackName),
-          getMyDecks(),
-        ]);
+  const decksQuery = useQuery({
+    queryKey: ["decks", user?.id],
+    queryFn: async () => (await getMyDecks()) as Deck[],
+    enabled: Boolean(user),
+  });
 
-        if (active) {
-          setProfile(profileData);
-          setDecks(deckData as Deck[]);
+  const profile =
+    (profileQuery.data as Profile | null | undefined) ??
+    (user
+      ? {
+          user_id: user.id,
+          name: fallbackName,
+          created_at: "",
         }
-      } catch (loadError) {
-        console.error("Failed to load profile:", loadError);
-        if (active) setError("We could not load your profile right now.");
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    load();
-
-    return () => {
-      active = false;
-    };
-  }, [user]);
+      : undefined);
+  const decks = decksQuery.data ?? [];
+  const loading =
+    Boolean(user) && (profileQuery.isPending || decksQuery.isPending);
+  const error = profileQuery.isError || decksQuery.isError;
+  const errorMessage =
+    actionError || (error ? "We could not load your profile right now." : "");
 
   const handleSignOut = async () => {
     setSigningOut(true);
+    setActionError("");
     const { error: signOutError } = await supabase.auth.signOut();
 
     if (signOutError) {
       setSigningOut(false);
-      setError("We could not sign you out. Please try again.");
+      setActionError("We could not sign you out. Please try again.");
       return;
     }
 
+    queryClient.clear();
     navigate("/login", { replace: true });
   };
 
@@ -108,13 +107,13 @@ export default function Profile() {
           </p>
         )}
 
-        {error && (
+        {errorMessage && (
           <p className="mt-8 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-            {error}
+            {errorMessage}
           </p>
         )}
 
-        {!loading && !error && profile && (
+        {!loading && !errorMessage && profile && (
           <div className="mt-8 space-y-5">
             <section className="rounded-2xl border border-(--bible-gold)/30 bg-(--bible-card-bg) p-5 shadow-sm sm:p-6">
               <div className="flex items-center gap-3">
