@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CreateDeckPopup from "@/components/CreateDeckPopup";
 import ConfirmPopup from "@/components/ConfirmPopup";
 
@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useAuth } from "@/context/AuthContext";
 import {
   createDeck,
   deleteDeck,
@@ -30,53 +32,91 @@ type Deck = {
 
 export default function Decks() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const [showCreateDeck, setShowCreateDeck] = useState(false);
-  const [decks, setDecks] = useState<Deck[]>([]);
   const [deckToDelete, setDeckToDelete] = useState<Deck | null>(null);
   const [deckToRename, setDeckToRename] = useState<Deck | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  const [actionError, setActionError] = useState("");
 
-  useEffect(() => {
-    getMyDecks().then(setDecks);
-  }, []);
+  const decksQueryKey = ["decks", user?.id] as const;
+  const decksQuery = useQuery({
+    queryKey: decksQueryKey,
+    queryFn: async () => (await getMyDecks()) as Deck[],
+    enabled: Boolean(user),
+  });
 
+  const refreshDecks = () =>
+    queryClient.invalidateQueries({ queryKey: decksQueryKey });
+
+  const createDeckMutation = useMutation({
+    mutationFn: createDeck,
+    onSuccess: () => {
+      setShowCreateDeck(false);
+      refreshDecks();
+    },
+    onError: (error) => {
+      console.error("Failed to create deck:", error);
+      setActionError("Failed to create deck. Please try again.");
+    },
+  });
+
+  const renameDeckMutation = useMutation({
+    mutationFn: ({ deckId, name }: { deckId: string; name: string }) =>
+      renameDeck(deckId, name),
+    onSuccess: () => {
+      setDeckToRename(null);
+      setRenameValue("");
+      refreshDecks();
+    },
+    onError: (error) => {
+      console.error("Failed to rename deck:", error);
+      setActionError("Failed to rename deck. Please try again.");
+    },
+  });
+
+  const deleteDeckMutation = useMutation({
+    mutationFn: deleteDeck,
+    onSuccess: () => {
+      setDeckToDelete(null);
+      refreshDecks();
+    },
+    onError: (error) => {
+      console.error("Failed to delete deck:", error);
+      setActionError("Failed to delete deck. Please try again.");
+    },
+  });
+
+  const decks = decksQuery.data ?? [];
   const mainDeck = decks.find((deck) => deck.is_default);
   const otherDecks = decks.filter((deck) => !deck.is_default);
 
-  const handleCreateDeck = async (name: string) => {
-    const deck = await createDeck(name);
-    setDecks((current) => [...current, deck]);
-    setShowCreateDeck(false);
+  const handleCreateDeck = (name: string) => {
+    setActionError("");
+    createDeckMutation.mutate(name);
   };
 
-  const handleRenameDeck = async () => {
+  const handleRenameDeck = () => {
     if (!deckToRename) return;
 
     const trimmedName = renameValue.trim();
 
     if (!trimmedName) return;
 
-    const updatedDeck = await renameDeck(deckToRename.id, trimmedName);
-
-    setDecks((current) =>
-      current.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck)),
-    );
-
-    setDeckToRename(null);
-    setRenameValue("");
+    setActionError("");
+    renameDeckMutation.mutate({
+      deckId: deckToRename.id,
+      name: trimmedName,
+    });
   };
 
-  const handleDeleteDeck = async () => {
+  const handleDeleteDeck = () => {
     if (!deckToDelete) return;
 
-    await deleteDeck(deckToDelete.id);
-
-    setDecks((current) =>
-      current.filter((deck) => deck.id !== deckToDelete.id),
-    );
-
-    setDeckToDelete(null);
+    setActionError("");
+    deleteDeckMutation.mutate(deckToDelete.id);
   };
 
   return (
@@ -114,6 +154,18 @@ export default function Decks() {
             </button>
           </div>
         </div>
+
+        {decksQuery.isPending && (
+          <p className="mt-8 text-center text-sm text-(--bible-page-text)/60">
+            Loading decks...
+          </p>
+        )}
+
+        {(decksQuery.isError || actionError) && (
+          <p className="mt-8 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            {actionError || "We could not load your decks right now."}
+          </p>
+        )}
 
         {/* Main Deck */}
         {mainDeck && (
